@@ -1,0 +1,1383 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Wuxia Hex Arena v1.0</title><style>
+:root{--bg:#030712;--panel:#08142cee;--line:#3a68a8;--gold:#ffd34a;--red:#ff4562;--green:#35e98c;--blue:#38a7ff;--cell:#dfe8f7;--cell2:#6f7f96}*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:none;user-select:none}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:radial-gradient(circle at 18% 12%,#7b2cff55 0 10%,transparent 26%),radial-gradient(circle at 82% 18%,#00d4ff44 0 9%,transparent 24%),radial-gradient(circle at 52% 78%,#ff3d8140 0 8%,transparent 28%),linear-gradient(180deg,#020615 0%,#07142b 48%,#02030a 100%);color:#eaf3ff;font-family:system-ui,Segoe UI,Tahoma,sans-serif}body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(#7ec8ff 0 1px,transparent 1.4px),radial-gradient(#8bd3ff 0 1px,transparent 1.5px),radial-gradient(#ffd6fb 0 1px,transparent 1.5px);background-size:52px 52px,91px 91px,137px 137px;background-position:0 0,25px 35px,70px 12px;opacity:.75;animation:spaceDrift 38s linear infinite}body:after{content:"";position:fixed;inset:-20%;pointer-events:none;z-index:0;background:conic-gradient(from 120deg at 50% 50%,transparent,#376dff18,transparent,#b142ff1c,transparent);filter:blur(20px);animation:nebulaSpin 80s linear infinite}.app{position:relative;z-index:1}@keyframes spaceDrift{to{background-position:120px 80px,205px 135px,250px 90px}}@keyframes nebulaSpin{to{transform:rotate(360deg)}}button{font:inherit}.app{height:100dvh;display:grid;grid-template-columns:300px minmax(430px,1fr) 300px;gap:10px;padding:10px;max-width:1180px;margin:0 auto}.panel{background:linear-gradient(180deg,#10285bdd,#06142edd);border:1px solid #4b8cffaa;border-radius:18px;padding:14px;box-shadow:0 0 22px #247cff22,0 10px 30px #000b;overflow:auto;min-width:0;backdrop-filter:blur(6px)}.boardPanel{position:relative;overflow:hidden;background:radial-gradient(circle at 50% 38%,#132c65cc 0 20%,#061327cc 55%,#020611e8 100%)}.topHud{position:absolute;top:12px;left:18px;right:18px;display:flex;justify-content:space-between;z-index:20;pointer-events:none}.pill{background:#07111ddb;border:1px solid #5aa7ff99;border-radius:999px;padding:8px 14px;font-weight:900;box-shadow:0 0 18px #38a7ff22}.banner{position:absolute;top:52px;left:50%;transform:translateX(-50%);z-index:25;background:#07111de8;border:1px solid #7dd3ff99;border-radius:18px;padding:7px 14px;font-size:14px;line-height:1.15;font-weight:900;text-align:center;box-shadow:0 0 24px #38a7ff33;max-width:360px}.stage{position:relative;width:100%;height:100%;min-height:520px;overflow:hidden;background:radial-gradient(circle at 40% 40%,#4cc9ff18,transparent 28%),radial-gradient(circle at 65% 22%,#c77dff18,transparent 25%)}.boardWrap{position:absolute;left:50%;top:40%;width:720px;height:540px;transform:translate(-50%,-36%) scale(.82);transform-origin:center center}.floor{position:absolute;left:40px;right:40px;bottom:18px;height:350px;background:radial-gradient(circle at 50% 45%,#8fd3ff22,transparent 45%),linear-gradient(180deg,#142a5c66,#060a1688);transform:perspective(900px) rotateX(62deg) rotateZ(45deg);border:1px solid #7dd3ff44;box-shadow:0 0 60px #38a7ff22,0 40px 80px #000b}.gridLayer,.floatLayer{position:absolute;inset:0}.floatLayer{z-index:80;pointer-events:none}.cell{position:absolute;width:76px;height:66px;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);background:linear-gradient(145deg,#f4fbff,#7d8ea8);box-shadow:0 0 18px #81d4ff30,0 16px 0 #526176,0 22px 18px #000b,inset 0 0 0 2px #7ec8ff77,inset 0 10px 18px #7ec8ff55;cursor:pointer}.cell:nth-child(3n){filter:brightness(.88)}.cell:nth-child(4n){filter:brightness(1.08)}.cell.block{background:radial-gradient(circle,#02030a,#000)!important;box-shadow:inset 0 0 22px #000,0 0 24px #7c3aed66,0 8px 14px #000}.cell.white{background:linear-gradient(145deg,#7ec8ff,#f6f6f6)!important;box-shadow:0 14px 0 #ddd,0 18px 16px #0005,inset 0 0 0 2px #7ec8ff!important;cursor:not-allowed}.cell.move{background:linear-gradient(145deg,#4fb2ff,#1b5686)}.cell.front{background:linear-gradient(145deg,#b98d20,#44300d);filter:drop-shadow(0 0 5px #ffd34aaa)}.cell.target{filter:drop-shadow(0 0 8px #ff2d55) drop-shadow(0 0 16px #ff2d55)}.unit{position:absolute;transform:translate(-50%,-76%);z-index:10;text-align:center;pointer-events:auto;cursor:pointer;transition:left .15s ease,top .15s ease}.pawn{width:52px;height:52px;border-radius:50%;margin:auto;border:3px solid currentColor;box-shadow:0 0 20px currentColor;background:radial-gradient(circle at 35% 30%,#7ec8ff8,currentColor 60%,#0006)}.ally{color:#27f07a}.enemy{color:#ff4058}.current{color:#111!important}.current .pawn{background:#111;border-color:#ffd84a;box-shadow:0 0 28px #ffd84a;animation:pulse .75s infinite alternate}.name{font-size:12px;font-weight:900;text-shadow:0 2px 3px #000;background:#07111dcc;border:1px solid #7ec8ff22;border-radius:999px;padding:2px 8px;white-space:nowrap;margin-bottom:3px}.current .name{border-color:#ffd84a;background:#2d240acc;color:#ffd84a}.faceTri{width:0;height:0;margin:0 auto 2px;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:15px solid currentColor;filter:drop-shadow(0 0 7px currentColor)}.fNW{transform:rotate(-60deg)}.fNE{transform:rotate(0deg)}.fE{transform:rotate(60deg)}.fSE{transform:rotate(120deg)}.fSW{transform:rotate(180deg)}.fW{transform:rotate(240deg)}.agi{font-weight:1000;text-shadow:0 2px 4px #000}.hpmini{width:70px;height:7px;border-radius:999px;background:#0008;margin:3px auto;overflow:hidden}.hpmini>i{display:block;height:100%;background:currentColor}@keyframes pulse{to{transform:scale(1.12);box-shadow:0 0 34px #ffd84a}}.float{position:absolute;transform:translate(-50%,0);font-weight:1000;text-shadow:0 3px 7px #000;animation:floatUp 1s ease-out forwards;z-index:81;white-space:nowrap}.float.dmg{color:#ff4d64;font-size:28px}.float.heal{color:#45ff99;font-size:28px}.float.crit{color:#ffe24a;font-size:42px}.float.ult{color:#ffdf4d;font-size:56px;text-shadow:0 5px 12px #000,0 0 22px #ff2d55,0 0 38px #ffdf4d}.float.buff{color:#7dd3fc;font-size:23px}@keyframes floatUp{to{transform:translate(-50%,-70px);opacity:0}}.impactShake{animation:shake var(--shakeDur,180ms) linear}@keyframes shake{20%{transform:translateX(var(--shake,6px))}40%{transform:translateX(calc(var(--shake,6px)*-1))}60%{transform:translateY(var(--shake,6px))}80%{transform:translateY(calc(var(--shake,6px)*-1))}}.title{font-size:22px;font-weight:900}.sub{color:#abc0d9;font-size:13px;line-height:1.45}.bar{height:16px;background:#10233a;border-radius:999px;overflow:hidden;margin:7px 0 10px}.hp{height:100%;background:linear-gradient(90deg,#1fd277,#91f0b9)}.mp{height:100%;background:linear-gradient(90deg,#47c7ff,#ffe04f)}.portrait{display:grid;grid-template-columns:58px 1fr;gap:10px;align-items:center;margin-bottom:10px}.avatar{width:58px;height:58px;border-radius:16px;background:#102640;border:1px solid #3e719f;display:flex;align-items:center;justify-content:center;font-size:28px}.hexPad{position:relative;width:226px;height:210px;margin:12px auto}.hexBtn{position:absolute;width:92px;height:78px;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);border:1px solid #315b87;background:#102640;color:#e9f2ff;cursor:pointer;font-weight:900}.hexBtn span{display:block;font-size:13px}.hexBtn.center{left:67px;top:66px;background:#b40018;border-color:#ff8a8a;color:white}.hexBtn.NE{left:67px;top:0}.hexBtn.NW{left:0;top:43px}.hexBtn.E{left:134px;top:43px}.hexBtn.W{left:0;top:109px}.hexBtn.SE{left:134px;top:109px}.hexBtn.SW{left:67px;top:132px}.faceMode .hexBtn.center{box-shadow:0 0 22px #ff3b3b;background:#ff142f}.tinybtn,.skill{border:1px solid #315b87;background:#102640;color:#e9f2ff;border-radius:13px;padding:10px;cursor:pointer}.skill{width:100%;text-align:left;margin:7px 0}.skill b{display:block;color:#ffe47a}.skill.ready{box-shadow:0 0 0 1px #ffd34a88}.skill.ult.ready{animation:glow .9s infinite alternate}@keyframes glow{to{box-shadow:0 0 18px #ffd34a}}button:disabled{opacity:.43;cursor:not-allowed}.log{height:140px;overflow:auto;border:1px solid #25466f;border-radius:14px;background:#06101bcc;padding:10px;font-size:13px;line-height:1.45}.agiQueue{margin-top:8px;padding:8px;border:1px solid #294d76;border-radius:12px;background:#07111dcc;font-size:12px;color:#cfe8ff}.overlay{position:fixed;inset:0;background:#000b;z-index:100;display:flex;align-items:center;justify-content:center;padding:14px}.pickpanel,.modalBox{width:min(1000px,96vw);max-height:88dvh;overflow:auto;background:#0d1c31;border:1px solid #355f8e;border-radius:18px;padding:16px;box-shadow:0 18px 60px #000}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}.card{background:#102640;border:1px solid #2a527d;border-radius:14px;padding:12px;text-align:left;cursor:pointer}.skillBox{border:1px solid #2a527d;background:#102640;border-radius:14px;padding:12px;margin:8px 0}.tag{display:inline-block;border:1px solid #315b87;border-radius:999px;padding:2px 8px;margin:2px;color:#dff}.close{float:right}.hint{position:absolute;bottom:8px;left:45%;transform:translateX(-50%);background:#07111dcc;border:1px solid #294d76;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:800;z-index:40}.right #skillPanel{max-height:62dvh;overflow:auto}.right .skill{font-size:13px;padding:10px;margin:7px 0}.right .skill b{font-size:14px}.miniMap{position:absolute;left:12px;top:96px;width:92px;height:70px;z-index:45;border:1px solid #69b7ff88;border-radius:12px;background:#020814cc;box-shadow:0 0 20px #38a7ff22;padding:6px;font-size:10px;color:#cfe8ff}.miniMap b{display:block;text-align:center;margin-bottom:3px;color:#ffe47a}.miniDot{position:absolute;width:7px;height:7px;border-radius:50%;box-shadow:0 0 8px currentColor}.miniDot.ally{background:#27f07a;color:#27f07a}.miniDot.enemy{background:#ff4058;color:#ff4058}.miniDot.block{background:#050505;color:#000;border:1px solid #666}.miniDot.void{background:#7ec8ff;color:#7ec8ff;border:1px solid #aaa}.miniMapGrid{position:relative;width:78px;height:42px;margin:0 auto}@media(max-width:1050px){.app{grid-template-columns:280px minmax(390px,1fr) 270px;gap:6px;padding:6px;max-width:none}.panel{padding:10px}.boardWrap{top:40%;transform:translate(-50%,-36%) scale(.75)}.banner{font-size:14px;padding:8px 12px}.title{font-size:19px}.left .sub{font-size:12px}.hexPad{transform:scale(.9);transform-origin:top center;margin-bottom:-8px}.log{height:110px}.right .skill{font-size:12px}}
+
+/* ===== HEX ARENA v2 UI OVERHAUL ===== */
+.app{grid-template-columns:292px minmax(500px,1fr) 260px;max-width:1260px;gap:12px;padding:12px}.panel{border-color:#69b7ffcc;background:linear-gradient(180deg,#102b64dd,#06142eee 72%,#030712ee);box-shadow:0 0 0 1px #7ec8ff10 inset,0 0 34px #247cff28,0 18px 44px #000c}.boardPanel{border-radius:22px;background:radial-gradient(circle at 50% 32%,#1d4ca4cc 0 16%,#0a1b3ecc 50%,#020611f2 100%)}.stage:before{content:"";position:absolute;inset:80px 20px 60px;background:radial-gradient(circle,#5ec8ff1a,transparent 52%);filter:blur(12px);pointer-events:none}.topHud .pill{font-size:15px;letter-spacing:.2px}.banner{top:56px;background:linear-gradient(180deg,#102b54e8,#06111fe8);border-color:#9bdcffaa;box-shadow:0 0 26px #38a7ff44,0 8px 30px #000b}.hint{bottom:14px;border-color:#69b7ff88;background:#06111fe0;box-shadow:0 0 18px #38a7ff22}.boardWrap{filter:drop-shadow(0 28px 30px #000a)}.floor{background:radial-gradient(circle at 50% 45%,#a7e8ff24,transparent 46%),linear-gradient(180deg,#162d6866,#02061199);border-color:#9bdcff55;box-shadow:0 0 90px #38a7ff25,0 50px 90px #000d}.cell{background:linear-gradient(145deg,#fbfdff 0%,#c7d5ea 40%,#8091ab 72%,#56657d 100%);box-shadow:0 14px 0 #56657d,0 20px 18px #0009,inset 0 0 0 2px #7ec8ff88,inset 0 10px 14px #7ec8ff75;transform:translateY(-6px);transition:transform .08s ease,filter .12s ease,box-shadow .12s ease}.cell:hover{transform:translateY(-10px);filter:brightness(1.12)}.cell.block{background:radial-gradient(circle at 50% 30%,#111827,#000 70%)!important;box-shadow:0 14px 0 #02040a,0 0 28px #7c3aed88,0 20px 18px #000b,inset 0 0 18px #000!important}.cell.white{background:linear-gradient(145deg,#7ec8ff 0%,#f8f8f8 55%,#e8e8e8 100%)!important;box-shadow:0 14px 0 #d7d7d7,0 0 20px #7ec8ffaa,0 20px 18px #0008,inset 0 0 0 2px #cfd6df!important;filter:none}.cell.move{background:linear-gradient(145deg,#7ee3ff,#2288d6 55%,#12466f);box-shadow:0 14px 0 #0f4b73,0 0 24px #38a7ffaa,0 20px 18px #0009}.cell.front{background:linear-gradient(145deg,#ffe58a,#b77d13 55%,#4d3109);box-shadow:0 14px 0 #5c3a0a,0 0 20px #ffd34aaa,0 20px 18px #0009}.cell.target{filter:drop-shadow(0 0 10px #ff4562) drop-shadow(0 0 18px #ffd34a)}.unit{filter:drop-shadow(0 12px 12px #000c)}.pawn{width:58px;height:58px;border-width:4px;box-shadow:0 0 26px currentColor,0 12px 20px #000a}.name{font-size:11px;border-color:#9bdcff55}.agi{font-size:15px;color:#7ec8ff}.hpmini{width:76px;height:8px;border:1px solid #06101d;background:#020611}.left .title{font-size:24px}.right h2{margin-top:6px}.log{height:calc(100dvh - 92px);background:#020814cc;border-color:#69b7ff55}
+/* MOBA skill cluster */
+.mobaHud{position:absolute;right:8px;bottom:2px;width:342px;height:268px;z-index:60;pointer-events:none}.mobaHud:before{content:"";position:absolute;right:-8px;bottom:-12px;width:270px;height:210px;border-radius:50%;background:radial-gradient(circle,#0b1b34cc 0 48%,transparent 70%);filter:blur(2px);opacity:.9}.mobaBtn{position:absolute;border:0;border-radius:50%;cursor:pointer;pointer-events:auto;color:#7ec8ff;background:radial-gradient(circle at 35% 25%,#7ec8ff66,#14315e 45%,#07101d 75%);box-shadow:0 10px 20px #000c,inset 0 0 0 3px #7ec8ff4f,0 0 0 2px #0d274d,0 0 20px #38a7ff40;display:flex;align-items:center;justify-content:center;font-weight:1000;text-shadow:0 2px 5px #000;transition:transform .08s ease,filter .15s ease,box-shadow .15s ease}.mobaBtn:hover{transform:scale(1.07)}.mobaBtn:active{transform:scale(.94)}.mobaBtn.ready{box-shadow:0 10px 20px #000c,inset 0 0 0 3px #7ec8ff9,0 0 0 2px #ffd34a,0 0 24px #ffd34a66}.mobaBtn:disabled{filter:grayscale(.75) brightness(.48);opacity:.68}.mobaBtn .ico{font-size:30px;line-height:1}.mobaBtn.basic .ico{font-size:54px}.mobaBtn.ult .ico{font-size:50px}.mobaBtn .num,.mobaBtn .cd{position:absolute;left:50%;transform:translateX(-50%);bottom:-9px;min-width:27px;height:27px;border-radius:999px;background:#06101de6;border:1px solid #ffd34aaa;display:flex;align-items:center;justify-content:center;font-size:12px;color:#7ec8ff}.mobaBtn .cd{inset:0;transform:none;border-radius:50%;background:#000a;border:0;font-size:35px;color:#ffe8a3}.mobaBtn .label{position:absolute;left:50%;transform:translateX(-50%);bottom:-32px;background:#06101de8;border:1px solid #5aa7ff88;border-radius:9px;padding:2px 8px;font-size:11px;white-space:nowrap;color:#eaf3ff}.mobaBtn.s1{left:54px;top:110px;width:72px;height:72px;background:radial-gradient(circle at 35% 25%,#7ec8ff7,#ff7a18 42%,#421206 78%)}.mobaBtn.s2{left:128px;top:70px;width:72px;height:72px;background:radial-gradient(circle at 35% 25%,#7ec8ff7,#19a7ff 42%,#06183e 78%)}.mobaBtn.s3{left:126px;top:158px;width:72px;height:72px;background:radial-gradient(circle at 35% 25%,#7ec8ff7,#5dff8e 42%,#06351b 78%)}.mobaBtn.ult{left:220px;top:12px;width:92px;height:92px;background:radial-gradient(circle at 35% 25%,#7ec8ff9,#ff9d00 38%,#481200 78%);box-shadow:0 10px 22px #000c,inset 0 0 0 4px #7ec8ff4,0 0 0 4px #c77a00,0 0 30px #ffd34a88}.mobaBtn.ult.ready{animation:ultPulse .9s infinite alternate}.mobaBtn.basic{left:210px;top:116px;width:118px;height:118px;background:radial-gradient(circle at 35% 25%,#7ec8ff77,#2f8cff 42%,#061832 78%)}
+.mobaBtn .ring{position:absolute;inset:-5px;border-radius:50%;background:conic-gradient(#7dd3ff calc(var(--pct,100)*1%),#1a2a44aa 0);opacity:.9;z-index:-1;filter:drop-shadow(0 0 8px #38a7ff66)}.mobaBtn.ready .ring{background:conic-gradient(#35e98c 100%,#35e98c 0);filter:drop-shadow(0 0 10px #35e98c88)}.mobaBtn.cooling .ring{background:conic-gradient(#ffb84d calc(var(--pct,0)*1%),#24130baa 0);filter:drop-shadow(0 0 10px #ffb84d66)}.mobaBtn.needmp .ring{background:conic-gradient(#ff4562 100%,#ff4562 0);filter:drop-shadow(0 0 10px #ff456266)}.mobaBtn .state{position:absolute;left:50%;transform:translateX(-50%);top:-18px;background:#06101de8;border:1px solid #5aa7ff88;border-radius:999px;padding:1px 7px;font-size:10px;white-space:nowrap;color:#cfe8ff}.mobaBtn.ready .state{border-color:#35e98c;color:#a8ffd1}.mobaBtn.cooling .state{border-color:#ffb84d;color:#ffe2a3}.mobaBtn.needmp .state{border-color:#ff4562;color:#ffb3bf}.cdPanel{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:12px 0}.cdBox{border:1px solid #4b8cff88;border-radius:14px;background:#06152bd0;padding:10px}.cdBox b{display:block;color:#ffe47a;margin-bottom:4px}.cdReady{color:#35e98c;font-weight:900}.cdWait{color:#ffb84d;font-weight:900}.cdBad{color:#ff6b7e;font-weight:900}.coolBar{height:9px;border-radius:999px;background:#07101dcc;overflow:hidden;border:1px solid #315b87;margin-top:7px}.coolBar i{display:block;height:100%;background:linear-gradient(90deg,#38a7ff,#35e98c);width:var(--w,100%)}.damageFormula{border:1px solid #5aa7ff77;background:#071a35cc;border-radius:14px;padding:12px;margin-top:10px}.damageFormula h4{margin:0 0 8px;color:#ffe47a}.aiBadge{display:inline-block;border:1px solid #ffd34aaa;border-radius:999px;padding:2px 9px;background:#2b2209cc;color:#ffe47a;font-weight:900}
+@keyframes ultPulse{to{box-shadow:0 10px 24px #000c,inset 0 0 0 4px #7ec8ff8,0 0 0 4px #ffd34a,0 0 40px #ffd34acc}}.mobaUtil{position:absolute;left:0;bottom:4px;width:170px;height:62px;display:flex;gap:12px;align-items:end;pointer-events:auto}.mobaUtil button{width:68px;height:58px;border-radius:18px;border:1px solid #5aa7ff88;background:linear-gradient(180deg,#143a6f,#071426);color:#7ec8ff;box-shadow:0 9px 18px #000a,inset 0 0 0 2px #7ec8ff18;cursor:pointer;font-weight:900}.mobaUtil button b{display:block;font-size:22px}.mobaUtil button span{display:block;font-size:10px;margin-top:1px}.mobaUtil button.ready{border-color:#ffd34aaa;box-shadow:0 9px 18px #000a,0 0 18px #ffd34a44,inset 0 0 0 2px #7ec8ff24}.mobaUtil button:disabled{opacity:.45;filter:grayscale(.8)}
+.miniMap{position:absolute;left:12px;top:96px;width:92px;height:70px;z-index:45;border:1px solid #69b7ff88;border-radius:12px;background:#020814cc;box-shadow:0 0 20px #38a7ff22;padding:6px;font-size:10px;color:#cfe8ff}.miniMap b{display:block;text-align:center;margin-bottom:3px;color:#ffe47a}.miniDot{position:absolute;width:7px;height:7px;border-radius:50%;box-shadow:0 0 8px currentColor}.miniDot.ally{background:#27f07a;color:#27f07a}.miniDot.enemy{background:#ff4058;color:#ff4058}.miniDot.block{background:#050505;color:#000;border:1px solid #666}.miniDot.void{background:#7ec8ff;color:#7ec8ff;border:1px solid #aaa}.miniMapGrid{position:relative;width:78px;height:42px;margin:0 auto}@media(max-width:1050px){.app{grid-template-columns:280px minmax(460px,1fr) 250px}.mobaHud{right:8px;bottom:18px;transform:scale(.86);transform-origin:right bottom}.hint{font-size:13px}.log{height:calc(100dvh - 76px)}}
+
+/* === v2 Modal Tabs + Nested Detail Modal === */
+.modalBox{position:relative}.heroTabs{display:flex;gap:8px;margin:14px 0 12px;position:sticky;top:-16px;background:linear-gradient(180deg,#0d1c31 70%,#0d1c3100);padding:10px 0;z-index:2;overflow-x:auto;white-space:nowrap}.skillTabsSplit{scrollbar-width:none}.skillTabsSplit::-webkit-scrollbar{display:none}.tabBtn{border:1px solid #3f7fbd;background:#071a35;color:#dcecff;border-radius:999px;padding:10px 14px;font-weight:900;cursor:pointer;box-shadow:inset 0 0 0 1px #7ec8ff12}.tabBtn.active{background:linear-gradient(180deg,#1f5d9b,#102746);border-color:#ffd34a;color:#7ec8ff3b0;box-shadow:0 0 18px #ffd34a33}.tabPane{display:grid;gap:12px}.heroSummary{border:1px solid #2d6098;border-radius:16px;background:linear-gradient(180deg,#102a50dd,#081a33dd);padding:14px}.skillCardV2{border:1px solid #2d6098;border-radius:18px;background:linear-gradient(180deg,#102a50ee,#081a33ee);padding:14px;box-shadow:inset 0 1px 0 #7ec8ff22}.skillCardV2 h3{margin:0 0 8px;color:#eaf3ff}.skillMeta{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.detailOverlayTop{z-index:145!important;background:#000d}.detailModalCard{width:min(760px,92vw);max-height:78dvh;overflow:auto;border:1px solid #79bdff;border-radius:18px;background:linear-gradient(180deg,#102a50,#061326);padding:18px;box-shadow:0 0 40px #38a7ff55,0 18px 70px #000}.detailGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:12px 0}.detailStat{border:1px solid #2d6098;border-radius:14px;background:#071a35;padding:10px}.detailStat b{display:block;color:#ffd34a;margin-bottom:4px}.passiveGlow{border-color:#ffd34a99;box-shadow:0 0 20px #ffd34a22}.modalActionRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+
+/* === v2.3 Futuristic Move / Face Hex Buttons === */
+.left{overflow:hidden}.hexPad{position:fixed;left:18px;top:50%;transform:translateY(-50%);width:236px;height:236px;margin:0;opacity:.55;z-index:70;filter:drop-shadow(0 0 16px #00d4ff33)}
+.hexPad:before{content:"";position:absolute;left:50%;top:50%;width:150px;height:150px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#0af3ff18,transparent 62%);box-shadow:0 0 40px #00d4ff22;pointer-events:none}.hexBtn{position:absolute;width:88px;height:78px;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);border:0!important;background:linear-gradient(145deg,#0b315f,#061426 72%)!important;color:#dff8ff!important;cursor:pointer;font-weight:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;text-shadow:0 2px 5px #000;box-shadow:0 0 0 2px #7dd3ff55 inset,0 0 0 5px #071a2c inset,0 0 20px #00d4ff55,0 9px 14px #0008!important;transition:transform .12s ease,filter .12s ease,box-shadow .12s ease}.hexBtn:active{transform:scale(.92)}.hexBtn:hover{filter:brightness(1.25)}.hexBtn .hot{font-size:13px;line-height:1;color:#7ec8ffaa;letter-spacing:.5px}.hexBtn .label{font-size:12px;line-height:1.05;color:#dff8ff}.hexIcon{position:relative;width:28px;height:30px;margin-bottom:1px}.hexIcon:before{content:"";position:absolute;left:50%;top:3px;width:14px;height:14px;border-radius:50%;transform:translateX(-50%);background:linear-gradient(#7ec8ff,#9eeaff);box-shadow:0 0 12px #8eeeff}.hexIcon:after{content:"";position:absolute;left:50%;bottom:0;width:24px;height:14px;border-radius:16px 16px 4px 4px;transform:translateX(-50%);background:linear-gradient(#bff6ff,#1d9ee8);box-shadow:0 0 14px #14c8ff}.dirArrow{position:absolute;width:0;height:0;filter:drop-shadow(0 0 8px currentColor)}.dirArrow.up{left:50%;top:-9px;transform:translateX(-50%);border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:12px solid currentColor}.dirArrow.down{left:50%;bottom:-9px;transform:translateX(-50%);border-left:9px solid transparent;border-right:9px solid transparent;border-top:12px solid currentColor}.dirArrow.left{left:-9px;top:50%;transform:translateY(-50%);border-top:9px solid transparent;border-bottom:9px solid transparent;border-right:12px solid currentColor}.dirArrow.right{right:-9px;top:50%;transform:translateY(-50%);border-top:9px solid transparent;border-bottom:9px solid transparent;border-left:12px solid currentColor}.hexBtn.NE{left:74px;top:0}.hexBtn.NW{left:2px;top:42px}.hexBtn.E{left:146px;top:42px}.hexBtn.W{left:2px;top:118px}.hexBtn.SE{left:146px;top:118px}.hexBtn.SW{left:74px;top:158px}.hexBtn.center{left:74px;top:80px;background:linear-gradient(145deg,#6d0013,#19030a 72%)!important;box-shadow:0 0 0 2px #ff8a8a88 inset,0 0 0 5px #2b0610 inset,0 0 24px #ff2d55aa,0 9px 16px #0009!important;color:#7ec8ff!important;z-index:2}.hexBtn.center .hexIcon:before{background:linear-gradient(#7ec8ff,#ffd1d1);box-shadow:0 0 12px #ffb4b4}.hexBtn.center .hexIcon:after{background:linear-gradient(#ffd1d1,#ef4444);box-shadow:0 0 14px #ff4d64}.faceMode .hexBtn:not(.center){background:linear-gradient(145deg,#5d3300,#1c1202 72%)!important;color:#ffd34a!important;box-shadow:0 0 0 2px #ffd34a88 inset,0 0 0 5px #231603 inset,0 0 22px #ffd34a66,0 9px 14px #0008!important}.faceMode .hexBtn.center{background:linear-gradient(145deg,#bd1026,#2a0209 72%)!important;animation:facePulse .85s infinite alternate}@keyframes facePulse{to{filter:brightness(1.35);box-shadow:0 0 0 2px #ffb4b4 inset,0 0 0 5px #2b0610 inset,0 0 34px #ff2d55,0 9px 16px #0009!important}}
+@media(max-width:1050px){.hexPad{transform:scale(.82);transform-origin:top center;margin-bottom:-36px}}
+
+
+.aiConfig{margin:10px 0 14px;padding:12px;border:1px solid #5aa7ff88;border-radius:16px;background:linear-gradient(180deg,#071a36dd,#06101bcc);box-shadow:0 0 18px #38a7ff22}
+.aiConfig h3{margin:0 0 8px;font-size:15px;color:#ffe47a}.aiRow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.aiDiffBtn{border:1px solid #315b87;background:#102640;color:#e9f2ff;border-radius:999px;padding:8px 12px;cursor:pointer;font-weight:900}.aiDiffBtn.active{background:linear-gradient(180deg,#ffd34a,#9b6b00);color:#08111f;border-color:#7ec8ff0a0;box-shadow:0 0 18px #ffd34a66}.aiSimBox{display:flex;gap:8px;align-items:center;margin-top:10px}.aiSimBox input{width:120px;border:1px solid #5aa7ff99;background:#020b18;color:#eaf3ff;border-radius:12px;padding:9px 10px;font-weight:900}.aiSimHint{font-size:12px;color:#abc0d9;line-height:1.4}.aiBadgeLarge{display:inline-block;border:1px solid #7dd3ff88;border-radius:999px;padding:4px 10px;background:#081a31;color:#7dd3ff;font-weight:900}
+
+/* === Hex Radius-5 Battle Royale Board === */
+.app{grid-template-columns:260px minmax(680px,1fr) 250px;max-width:1320px}.stage{min-height:720px}
+.floor{display:none!important}.stage{background:radial-gradient(circle at 50% 45%,#1b4c9c55,transparent 46%)}
+.cell{width:80px;height:70px;transform:none!important;background:linear-gradient(145deg,#f7f9fc 0%,#dbe2ec 38%,#aeb8c4 72%,#858f9a 100%);box-shadow:inset 0 0 0 2px #7ec8ffd0,0 8px 14px #0006!important;filter:none!important}
+.cell.white{background:linear-gradient(145deg,#7ec8ff 0%,#7ec8ff 58%,#eef2f7 100%)!important;box-shadow:inset 0 0 0 2px #d5dce7,0 8px 14px #0004!important}
+.cell.block{background:linear-gradient(145deg,#2a2a2a,#050505 76%)!important;box-shadow:inset 0 0 0 2px #333,0 8px 14px #0009!important}
+.cell.hill{background:linear-gradient(145deg,#4a7c2f 0%,#2d5a1a 45%,#1a3d0e 80%,#0f2408 100%)!important;box-shadow:inset 0 0 0 2px #6aaa3a,inset 0 -6px 10px #0005,0 8px 16px #000a!important;}
+.cell.fire{background:linear-gradient(145deg,#ff6b00,#8b1a00 60%,#3d0000 100%)!important;box-shadow:0 0 22px #ff4500aa,0 0 44px #ff0000,inset 0 0 0 2px #ffaa00,0 8px 14px #000!important;animation:firePulse .8s ease-in-out infinite alternate}
+.cell.fireWarn{background:linear-gradient(145deg,#442200,#220d00 70%)!important;box-shadow:0 0 12px #ff6600aa,inset 0 0 0 2px #ff660066!important;animation:warnPulse 1s ease-in-out infinite alternate}
+@keyframes firePulse{from{filter:brightness(1)}to{filter:brightness(1.35);box-shadow:0 0 38px #ff6600,0 0 60px #ff0000,inset 0 0 0 2px #ffff00!important}}
+@keyframes warnPulse{from{filter:brightness(.9)}to{filter:brightness(1.2);box-shadow:0 0 24px #ff880088,inset 0 0 0 2px #ff8800!important}}
+.cell:hover{transform:none!important;filter:brightness(1.08)!important}.cell.move{background:linear-gradient(145deg,#86dcff,#267bcc 72%)!important}.cell.front{background:linear-gradient(145deg,#ffe58a,#bb8418 70%)!important}.cell.target{filter:drop-shadow(0 0 10px #ff4562) drop-shadow(0 0 18px #ffd34a)!important}
+.miniMap{width:120px!important;height:100px!important}.miniMapGrid{width:100px!important;height:80px!important}.miniDot{width:6px!important;height:6px!important}
+
+/* === v5.6 Relic Objective System === */
+.relicObj{position:absolute;transform:translate(-50%,-65%);z-index:8;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:1000;text-shadow:0 3px 8px #000;pointer-events:none;filter:drop-shadow(0 10px 12px #000b)}
+.relicObj.active{box-shadow:0 0 0 3px #7ec8ff8 inset,0 0 22px #ffd34a,0 0 36px #38a7ff;background:#06111dcc}
+.relicObj.locked{opacity:.55;filter:grayscale(.4) drop-shadow(0 8px 10px #000b)}
+.relicObj .cap{position:absolute;left:50%;bottom:-16px;transform:translateX(-50%);font-size:11px;background:#06101de8;border:1px solid #ffd34aaa;border-radius:999px;padding:1px 7px;white-space:nowrap;color:#7ec8ff}
+.cell.relicZone{filter:drop-shadow(0 0 8px #ffd34a) brightness(1.08)}
+.cell.relicCenter{filter:drop-shadow(0 0 12px #ffdf4d) drop-shadow(0 0 22px #38a7ff) brightness(1.15)}
+.relicChip{display:inline-block;border:1px solid #ffd34aaa;border-radius:999px;padding:2px 8px;margin:2px;color:#ffe47a;background:#2b2209cc;font-weight:900}
+
+
+/* === Hex-Radius-5 board panel centering === */
+.boardPanel .boardWrap{
+  left:50% !important;
+  top:50% !important;
+  width:730px !important;
+  height:800px !important;
+  transform:translate(-50%,-50%) scale(.88) !important;
+}
+@media(max-width:1150px){
+  .boardPanel .boardWrap{
+    left:50% !important;
+    top:50% !important;
+    transform:translate(-50%,-50%) scale(.68) !important;
+  }
+}
+
+
+/* === BOT Thinking Modal === */
+#thinkModal{
+  display:none;position:fixed;z-index:9999;
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  background:linear-gradient(135deg,#0a1628ee,#0d2040ee);
+  border:2px solid #ff4a4a88;border-radius:18px;
+  padding:22px 36px;text-align:center;
+  box-shadow:0 0 40px #ff4a4a44,0 8px 32px #0009;
+  min-width:240px;pointer-events:none;
+}
+#thinkModal .think-hero{font-size:1.15rem;font-weight:700;color:#ff8888;margin-bottom:6px}
+#thinkModal .think-label{font-size:.85rem;color:#aac4ff;margin-bottom:12px}
+#thinkModal .think-dots span{
+  display:inline-block;width:10px;height:10px;border-radius:50%;
+  background:#ff5555;margin:0 4px;
+  animation:thinkBounce .9s infinite ease-in-out;
+}
+#thinkModal .think-dots span:nth-child(2){animation-delay:.18s;background:#ff9944}
+#thinkModal .think-dots span:nth-child(3){animation-delay:.36s;background:#ffe044}
+@keyframes thinkBounce{0%,80%,100%{transform:translateY(0);opacity:.5}40%{transform:translateY(-10px);opacity:1}}
+#thinkModal .think-sims{font-size:.75rem;color:#5577aa;margin-top:10px}
+
+/* === v5.7 Unit Pawn Human Icon Override === */
+.unit .pawn{
+  position:relative!important;
+  width:58px!important;
+  height:58px!important;
+  border-radius:50%!important;
+  border:4px solid currentColor!important;
+  background:radial-gradient(circle at 50% 42%,#07111d 0 42%,#020611 68%,#000 100%)!important;
+  box-shadow:0 0 22px currentColor,0 12px 20px #000b,inset 0 0 0 3px #7ec8ff22!important;
+  overflow:visible!important;
+}
+.unit .pawn:before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:10px;
+  width:17px;
+  height:17px;
+  border-radius:50%;
+  transform:translateX(-50%);
+  background:linear-gradient(180deg,#eaffff 0%,#9eeaff 42%,currentColor 100%);
+  box-shadow:0 0 12px currentColor,0 2px 5px #0008;
+}
+.unit .pawn:after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:29px;
+  width:34px;
+  height:22px;
+  border-radius:18px 18px 7px 7px;
+  transform:translateX(-50%);
+  background:linear-gradient(180deg,#eaffff 0%,#8eeeff 30%,currentColor 100%);
+  clip-path:polygon(22% 0,78% 0,100% 80%,86% 100%,14% 100%,0 80%);
+  box-shadow:0 0 14px currentColor,0 4px 8px #0008;
+}
+.unit.current .pawn{
+  border-color:#ffd84a!important;
+  color:#ffd84a!important;
+  background:radial-gradient(circle at 50% 42%,#171000 0 42%,#050302 72%,#000 100%)!important;
+  box-shadow:0 0 30px #ffd84a,0 14px 22px #000c,inset 0 0 0 3px #ffd84a33!important;
+}
+.unit.current .pawn:before,
+.unit.current .pawn:after{
+  background:linear-gradient(180deg,#fff8c8 0%,#ffd84a 45%,#4b3200 100%)!important;
+  box-shadow:0 0 14px #ffd84a,0 4px 8px #0009!important;
+}
+.enemy .pawn:before,.enemy .pawn:after{filter:drop-shadow(0 0 8px #ff4058)}
+.ally .pawn:before,.ally .pawn:after{filter:drop-shadow(0 0 8px #27f07a)}
+
+</style></head><body><div class="app"><aside class="panel left"><div id="leftInfo"></div></aside><main class="panel boardPanel"><div class="topHud"><div class="pill">Hex Arena v2</div><div class="pill" id="turnPill">Turn</div></div><div class="banner" id="banner">Wuxia Hex Arena v1.0 • Battle Royale</div><div class="stage"><div id="miniMap" class="miniMap"><b>MAP</b><div id="miniMapDots"></div></div><div class="boardWrap"><div class="floor"></div><div id="board" class="gridLayer"></div><div id="floatLayer" class="floatLayer"></div></div></div><div id="skillPanel" class="mobaHud"></div><div class="hint">Wuxia Hex Arena v1.0 • 🔥 Battle Royale • Round 3/6/9 = Fire Ring ขยายเข้า • Void=ฟ้า Wall=ดำ</div></main><aside class="panel right"><h2>Battle Log</h2><div class="log" id="log"></div></aside></div><div class="overlay" id="pickMe"><div class="pickpanel"><h2>แบนหัวหน้าฝั่งผู้เล่น 1 ตัว (ยุทธจักรวูเซี่ย)</h2><div class="aiConfig"><h3>BOT AI Difficulty</h3><div class="aiRow"><button class="aiDiffBtn" data-ai="Easy">Easy</button><button class="aiDiffBtn active" data-ai="Normal">Normal</button><button class="aiDiffBtn" data-ai="Hard">Hard</button><button class="aiDiffBtn" data-ai="Insane">Insane</button></div><div class="aiSimBox"><label>Simulations</label><input id="aiSimsInput" type="number" min="10" max="10000" step="10" value="500"><span id="aiPresetLabel" class="aiBadgeLarge">Normal = 500</span></div><div class="aiSimHint">ค่า Sim คือจำนวน MCTS rollouts ของ Mini AlphaZero ยิ่งมากยิ่งคิดนาน แต่เลือกกลยุทธ์ดีขึ้น สามารถพิมพ์แก้เองได้</div></div><div class="grid" id="meGrid"></div></div></div><div class="overlay" id="pickBot" style="display:none"><div class="pickpanel"><h2>เลือก Hero (3 ตัว สลับกับ BOT)</h2><div class="grid" id="botGrid"></div></div></div><div class="overlay" id="heroModal" style="display:none"><div class="modalBox"><button class="tinybtn close" onclick="closeHeroModal()">ปิด</button><h2 id="modalName"></h2><div id="modalBody"></div></div></div><div class="overlay" id="detailModal" style="display:none"><div class="modalBox"><button class="tinybtn close" onclick="closeDetailModal()">ปิด</button><h2 id="detailName"></h2><div id="detailBody"></div></div></div><div id="thinkModal"><div class="think-hero" id="thinkHeroName">BOT กำลังคิด</div><div class="think-label" id="thinkHeroLore"></div><div class="think-dots"><span></span><span></span><span></span></div><div class="think-sims" id="thinkSims"></div></div><div class="overlay" id="resultOverlay" style="display:none"><div class="modalBox"><h1 id="resultTitle">จบเกม</h1><p id="resultMsg"></p><button class="tinybtn" onclick="resetPick()">เลือกตัวละครใหม่</button></div></div>
+<script>
+const $=id=>document.getElementById(id);const board=$('board'),miniMapDots=$('miniMapDots'),floatLayer=$('floatLayer'),leftInfo=$('leftInfo'),turnPill=$('turnPill'),skillPanel=$('skillPanel'),logEl=$('log'),pickMe=$('pickMe'),pickBot=$('pickBot'),meGrid=$('meGrid'),botGrid=$('botGrid'),resultOverlay=$('resultOverlay'),resultTitle=$('resultTitle'),resultMsg=$('resultMsg'),heroModal=$('heroModal'),modalName=$('modalName'),modalBody=$('modalBody'),detailModal=$('detailModal'),detailName=$('detailName'),detailBody=$('detailBody');
+const roster={
+  chiufong:{name:'เชียวฟง',lore:'LEADER / แปดเทพอสูร / Warrior Bruiser',baseAtk:10,maxHp:220,dodge:.05,agi:65,isLeader:true,leaderAura:'ราชันคิตัน: ทีมได้ ATK +8% และ HP +10%',passive:{name:'เลือดนักสู้',desc:'Crit 10% ถาวร • HP ต่ำกว่า 50% ดาเมจ +25% • หัวหน้า ถ้าตายทีมแพ้ทันที'},skill:{attack:{type:'hit',factor:1.0,range:1,uiName:'หมัดยาวไท่จู่'},skill1:{type:'hit',factor:2.2,range:2,cooldown:2,mp:1,uiName:'มังกรปรากฏกลางทุ่ง'},skill2:{type:'fan',factor:1.8,range:2,cooldown:3,mp:1,uiName:'กระจายมังกรสามทิศ'},skill3:{type:'dashLine',factor:3.0,range:3,cooldown:5,mp:2,uiName:'มังกรเหินเวหา'},ult:{type:'leapAoE',factor:2.5,range:2,radius:1,cooldown:6,mp:3,knock:1,uiName:'คังเล้งอิ่วฮุย'}}},
+  zhang:{name:'จางซันฟง',lore:'LEADER / ดาบมังกรหยก / Tai Chi Counter Tank',baseAtk:7,maxHp:170,dodge:.35,agi:45,isLeader:true,leaderAura:'ไท้เก๊กชาน: ทีมได้ DR -10% และ Counter +15%',passive:{name:'ไท้เก๊ก — ยืมแรงสะท้อนแรง',desc:'50% โอกาสปัดป่ายสมบูรณ์ + 50% ลดดาเมจเหลือ 60% • Basic Attack ฟื้น HP 10% • Counter 30% • หัวหน้า'},skill:{attack:{type:'hit',factor:1.0,range:1,heal:.10,uiName:'มวยไท้เก๊ก'},skill1:{type:'hit',factor:1.7,range:2,cooldown:2,mp:1,uiName:'กระบี่ไท้เก๊ก'},skill2:{type:'buff',cooldown:3,mp:1,counterBuff:.35,counterBuffTurns:2,damageReduction:.30,damageReductionTurns:2,uiName:'หมุนเวียนปราณหยาง'},skill3:{type:'hit',factor:4.0,range:2,cooldown:5,mp:2,uiName:'ปราณหยางบริสุทธิ์'},ult:{type:'hit',factor:5.6,range:2,cooldown:7,mp:3,forceCrit:true,critMult:1.5,uiName:'สงบสยบเคลื่อนไหว'}}},
+  guojing:{name:'ก๊วยเจ๋ง',lore:'LEADER / มังกรหยก / Extra Attack Fighter',baseAtk:10,maxHp:220,dodge:.05,agi:55,isLeader:true,leaderAura:'สองมือประสาน: ทีมได้ AGI +5 และ Range +1',passive:{name:'สองมือประสานรบ',desc:'10% โอกาสตีซ้ำทันที (50% ดาเมจ) • หัวหน้า ถ้าตายทีมแพ้ทันที'},skill:{attack:{type:'hit',factor:1.0,range:2,uiName:'มังกรปรากฏกลางทุ่ง'},skill1:{type:'hit',factor:1.8,range:4,cooldown:3,mp:1,uiName:'หมัดว่างกระจ่าง'},skill2:{type:'aoe',factor:1.3,range:3,radius:1,cooldown:4,mp:2,uiName:'ฝ่ามือปราณแผ่กว้าง'},skill3:{type:'hit',factor:2.6,range:4,cooldown:6,mp:2,uiName:'มังกรทะนงย่อมโทมนัส'},ult:{type:'hit',factor:5.2,range:6,cooldown:9,mp:3,pierce:true,uiName:'หนึ่งดอกร้อยอินทรีคู่'}}},
+  zhangwuji:{name:'เตียบ่อกี้',lore:'LEADER / ดาบมังกรหยก / Nine Yang Sustain',baseAtk:9,maxHp:200,dodge:.10,agi:60,isLeader:true,leaderAura:'ปราณเก้าหยาง: ทีมฟื้น HP 3%/เทิร์น',passive:{name:'ปราณเก้าหยาง',desc:'ฟื้น HP 4% ต้นเทิร์น • หัวหน้า ถ้าตายทีมแพ้ทันที'},skill:{attack:{type:'hit',factor:1.0,range:1,uiName:'เก้าหยางผลักคลื่น'},skill1:{type:'buff',heal:.15,cooldown:3,mp:1,uiName:'เก้าหยางหมุนเวียน'},skill2:{type:'hit',factor:2.0,range:2,cooldown:4,mp:2,uiName:'ฝ่ามือเก้าหยางสะท้าน'},skill3:{type:'buff',shield:.20,damageReduction:.20,damageReductionTurns:2,cooldown:5,mp:2,uiName:'เกราะปราณเก้าหยาง'},ult:{type:'hit',factor:2.2,hits:3,range:2,cooldown:9,mp:3,uiName:'ฝ่ามือเพลิงศักดิ์สิทธิ์'}}},
+  yideng:{name:'อิดเต็งไต้ซือ',lore:'LEADER / มังกรหยก / Healer Support',baseAtk:6,maxHp:165,dodge:.10,agi:62,isLeader:true,leaderAura:'เมตตาธรรม: ทีมฟื้น HP 3% เมื่อใช้สกิล และ Range +1',passive:{name:'เมตตาธรรมแห่งต้าหลี่',desc:'รักษา/ล้างสถานะ → เมตตา +1 • ครบ 3: ฟื้น HP 8 เพื่อน HP ต่ำสุด + MP +1 + ลด CD รักษา 1 • หัวหน้า'},skill:{attack:{type:'hit',factor:.80,range:2,slow:1,uiName:'ดรรชนีเอกสุริยัน'},skill1:{type:'buff',heal:.15,cooldown:2,mp:0,uiName:'ดรรชนีเปิดชีพจร'},skill2:{type:'buff',movePlus:2,movePlusTurns:1,nextSkillBoost:.15,cooldown:3,mp:2,uiName:'ถ่ายทอดปราณบริสุทธิ์'},skill3:{type:'hit',factor:.70,range:3,cooldown:4,mp:2,stun:1,mpReduce:1,uiName:'ผนึกจุดอาทิตย์'},ult:{type:'buff',heal:.20,shield:.15,allAllies:true,damageReduction:.15,damageReductionTurns:2,cooldown:7,mp:3,uiName:'แสงธรรมคุ้มครองสรรพชีวิต'}}},
+  yenhuo:{name:'เยินหว่อสิง',lore:'แปดเทพอสูร • Lifesteal Bruiser',baseAtk:9,maxHp:250,dodge:.0,agi:52,passive:{name:'มหาเวทย์ดูดดาว',desc:'สกิล 1-3 ดูดเลือด 20% ของดาเมจที่ทำ'},skill:{attack:{type:'hit',factor:1.0,range:1,uiName:'ฝ่ามือดูดดาว'},skill1:{type:'hit',factor:1.22,range:2,cooldown:2,mp:1,lifesteal:.20,uiName:'หมัดสุริยันจันทรา'},skill2:{type:'hit',factor:2.67,range:2,cooldown:5,mp:2,lifesteal:.20,uiName:'ข้าทำตามใจข้า'},skill3:{type:'hit',factor:4.44,range:3,cooldown:7,mp:2,lifesteal:.20,solarWeaken:1,uiName:'กลืนปราณร้อยสำนัก'},ult:{type:'hit',factor:5.56,range:3,cooldown:9,mp:3,heal:.15,uiName:'เจ้าสำนักครองภพ'}}},
+  wangyuyan:{name:'หวังอวี่เยียน',lore:'แปดเทพอสูร • Evasion Buffer / Support',baseAtk:8,maxHp:110,dodge:.25,agi:98,passive:{name:'อ่านกระบวนท่าทะลุปรุโปร่ง',desc:'เพื่อนหลบสำเร็จ → หยั่งรู้ +1 (สูงสุด 3) • ครบ 3: ฟื้น MP +1 + หลบตัวเอง +20% 1 เทิร์น'},skill:{attack:{type:'hit',factor:1.25,range:2,mp:1,solarWeaken:1,uiName:'ดัชนีชี้ช่องโหว่'},skill1:{type:'buff',dodgeBuff:.50,dodgeBuffTurns:1,cooldown:4,mp:2,allAllies:true,uiName:'ระบำเงาพริ้ว'},skill2:{type:'buff',heal:.15,cooldown:6,mp:2,uiName:'ลมหายใจหยก'},skill3:{type:'mark',factor:0,range:4,cooldown:4,mp:1,damageAmp:.20,uiName:'ชี้รูโหว่ทะลุเงา'},ult:{type:'buff',dodgeBuff:.90,dodgeBuffTurns:1,cooldown:8,mp:3,allAllies:true,uiName:'ม่านมายาหมื่นเงา'}}},
+  duanyu:{name:'ต้วนอี้',lore:'แปดเทพอสูร • Mage Assassin / Pulse Finisher',baseAtk:9,maxHp:125,dodge:.20,agi:96,passive:{name:'เท้าท่องคลื่นแห่งวาสนา',desc:'หลบสำเร็จ → จังหวะชีพจร +1 (สูงสุด 2) • ต่อชั้น: เวทถัดไป +15%'},skill:{attack:{type:'hit',factor:1.33,range:3,mp:1,uiName:'ดรรชนีหกชีพจร'},skill1:{type:'buff',dodgeBuff:.30,dodgeBuffTurns:2,movePlus:2,movePlusTurns:1,cooldown:2,mp:1,uiName:'เท้าท่องคลื่น'},skill2:{type:'hit',factor:1.78,range:2,cooldown:3,mp:2,mpReduce:1,uiName:'เป่ยหมิงดูดปราณ'},skill3:{type:'buff',nextSkillBoost:.30,dodgeBuff:.15,dodgeBuffTurns:1,cooldown:4,mp:1,uiName:'ชีพจรพุ่งแรก'},ult:{type:'hit',factor:5.33,range:5,cooldown:5,mp:3,uiName:'กระบี่หกชีพจรผสาน'}}},
+  dingchunqiu:{name:'ติงชุนชิว',lore:'แปดเทพอสูร • Poison Master / Mana Drain',baseAtk:8,maxHp:150,dodge:.10,agi:70,passive:{name:'พิษกัดกร่อนเส้นลมปราณ',desc:'ติดพิษสำเร็จ → ฟื้น HP 4 • ครบ 3 ชั้นพิษ: ลด CD ทั้งหมด 1'},skill:{attack:{type:'hit',factor:1.0,range:2,uiName:'ฝ่ามือดาวพิษ'},skill1:{type:'hit',factor:.30,hits:3,range:3,cooldown:2,mp:1,burn:1,mpReduce:1,uiName:'เข็มพิษดารา'},skill2:{type:'hit',factor:1.4,range:3,cooldown:3,mp:2,solarWeaken:2,uiName:'มหาเวทสลายพลัง'},skill3:{type:'aoe',factor:.80,range:3,radius:1,cooldown:4,mp:2,burn:2,mpReduce:1,uiName:'หมอกพิษสลายปราณ'},ult:{type:'hit',factor:.83,hits:3,range:4,cooldown:7,mp:3,burn:2,pierce:true,uiName:'กัดกินวิญญาณ'}}},
+  lenghu:{name:'เล้งหู้ชง',lore:'กระบี่เย้ยยุทธจักร • Crit Stacker / Burst',baseAtk:8,maxHp:140,dodge:.35,agi:88,passive:{name:'กระบี่เก้าเดียวดาย',desc:'เกจคริ +10%/เทิร์น (สะสม สูงสุด 60%) • ติดคริสำเร็จ → หลบ +10% 1 เทิร์น'},skill:{attack:{type:'hit',factor:1.0,range:1,uiName:'เพลงกระบี่ฮั้วซัว'},skill1:{type:'hit',factor:2.4,range:2,cooldown:2,mp:1,uiName:'ท่าทำลายกระบี่'},skill2:{type:'hit',factor:1.2,hits:3,range:2,cooldown:4,mp:2,uiName:'ท่าทำลายดาบ'},skill3:{type:'buff',dodgeBuff:.20,dodgeBuffTurns:2,nextSkillBoost:.30,cooldown:4,mp:1,uiName:'กายวิเวก'},ult:{type:'hit',factor:4.5,range:3,cooldown:8,mp:3,forceCrit:true,critMult:2.0,uiName:'ท่าทำลายลมปราณ'}}},
+  dongfang:{name:'ตงฟางปุป้าย',lore:'กระบี่เย้ยยุทธจักร • Speed Burst / Post-Dodge',baseAtk:10,maxHp:180,dodge:.10,agi:95,passive:{name:'เร็วเหนือเงา',desc:'หลบ 10% • หลบสำเร็จ → สกิลถัดไปแรงขึ้น +25%'},skill:{attack:{type:'hit',factor:1.2,range:2,uiName:'เข็มลอยปลายลม'},skill1:{type:'hit',factor:1.8,range:2,cooldown:2,mp:1,uiName:'คัมภีร์ทานตะวัน บทปฐม'},skill2:{type:'hit',factor:2.4,range:3,cooldown:5,mp:2,selfRetreat:2,uiName:'เงาแหวกมิติ'},skill3:{type:'buff',dodgeBuff:.25,dodgeBuffTurns:1,nextSkillBoost:.35,cooldown:5,mp:1,uiName:'เร็วกว่าเงา'},ult:{type:'hit',factor:5.5,range:3,cooldown:8,mp:3,forceCrit:true,critMult:1.5,uiName:'ทานตะวันไร้พ่าย'}}},
+  luksiaofeng:{name:'เล็กเซี่ยวหงส์',lore:'กระบี่เย้ยยุทธจักร • Counter / Poke Hybrid',baseAtk:8,maxHp:120,dodge:.30,agi:90,passive:{name:'ดรรชนีสัมพันธ์ใจ',desc:'หลบสำเร็จ → สวนกลับ 12 ดาเมจ + ฟื้น HP 6'},skill:{attack:{type:'hit',factor:1.0,range:2,uiName:'ดีดดรรชนีสี่คิ้ว'},skill1:{type:'hit',factor:1.75,range:3,cooldown:2,solarWeaken:1,uiName:'สองนิ้วหนีบกระบี่'},skill2:{type:'hit',factor:2.25,range:3,cooldown:4,selfRetreat:1,uiName:'ถอยหนึ่งรุกสอง'},skill3:{type:'hit',factor:3.0,range:4,cooldown:6,dodgeBuff:.15,dodgeBuffTurns:1,uiName:'วิชาตัวเบาไร้เงา'},ult:{type:'hit',factor:2.5,hits:3,range:4,cooldown:8,uiName:'หงส์ผงาดฟ้า'}}},
+  fangzheng:{name:'ฟางเจิ้งไต้ซือ',lore:'กระบี่เย้ยยุทธจักร • AoE Control Monk / Counter',baseAtk:10,maxHp:120,dodge:.05,agi:60,passive:{name:'คัมภีร์เปลี่ยนเส้นเอ็น',desc:'ต้นเทิร์นฟื้น HP 5% (8% ถ้า HP < 50%)'},skill:{attack:{type:'hit',factor:1.0,range:2,mp:1,uiName:'ดรรชนีปราณอรหันต์'},skill1:{type:'randomRadius',factor:1.0,hits:4,radius:5,cooldown:4,mp:2,uiName:'ฝ่ามือยูไลครอบจักรวาล'},skill2:{type:'buff',counterBuff:.40,counterBuffTurns:2,damageReduction:.30,damageReductionTurns:2,cooldown:6,mp:2,uiName:'สิงหนาทสะท้านมาร'},skill3:{type:'aoe',factor:1.5,range:3,radius:1,cooldown:4,mp:2,slow:1,uiName:'ปราณอรหันต์แผ่กว้าง'},ult:{type:'aoe',factor:2.6,range:4,radius:3,cooldown:8,mp:3,stun:1,uiName:'พันหัตถ์ยูไลปราบมาร'}}},
+  kongjian:{name:'คงเกี้ยนไต้ซือ',lore:'ดาบมังกรหยก • Diamond Body Tank / Counter',baseAtk:9,maxHp:250,dodge:.05,agi:48,passive:{name:'กายเพชรไม่แตกสลาย',desc:'ถูกตี → กายเพชร +1 (สูงสุด 5) • ต่อชั้น: ลดดาเมจ 4% • ครบ 5: สกิลถัดไป +30% + ฟื้น 8% MaxHP'},skill:{attack:{type:'hit',factor:1.56,range:1,mp:1,uiName:'หมัดอรหันต์'},skill1:{type:'buff',damageReduction:.35,damageReductionTurns:3,heal:.05,cooldown:4,mp:2,uiName:'ระฆังทองคุ้มกาย'},skill2:{type:'buff',counterBuff:.35,counterBuffTurns:2,damageReduction:.25,damageReductionTurns:2,cooldown:5,mp:2,uiName:'ฝ่ามือวัชระสะท้อนกลับ'},skill3:{type:'hit',factor:2.0,range:2,cooldown:4,mp:2,slow:1,uiName:'ผลักฝ่ามือวัชระ'},ult:{type:'aoe',factor:2.67,range:2,radius:2,cooldown:8,mp:3,knock:1,solarWeaken:2,uiName:'สิงหนาทวัชระปราบมาร'}}},
+  xiexun:{name:'เซี่ยซุ่น',lore:'ดาบมังกรหยก • Iron Lion Tank / Rage',baseAtk:7,maxHp:250,dodge:.05,agi:48,passive:{name:'ราชสีห์ทองคุ้มกาย',desc:'รับดาเมจ -10% ถาวร • ถูกตี → โทสะ +1 (สูงสุด 5) • ครบ 3: ฟื้น 10HP + ลดดาเมจถัดไป -40%'},skill:{attack:{type:'hit',factor:1.0,range:1,solarWeaken:1,uiName:'หมัดราชสีห์'},skill1:{type:'hit',factor:1.6,range:1,cooldown:2,pull:1,uiName:'กรงเล็บราชสีห์'},skill2:{type:'buff',damageReduction:.50,damageReductionTurns:2,cooldown:4,mp:2,uiName:'เกราะขนราชสีห์'},skill3:{type:'hit',factor:2.2,range:2,cooldown:5,mp:2,solarWeaken:2,uiName:'หมัดเจ็ดบาดแผล'},ult:{type:'aoe',factor:1.2,range:3,radius:2,cooldown:7,mp:3,stun:1,mpReduce:1,uiName:'ราชสีห์คำรามสะท้านภพ'}}},
+  yeegor:{name:'เอี้ยก๋วย',lore:'อินทรีเจ้ายุทธจักร • Anti-Dodge Bruiser',baseAtk:10,maxHp:200,dodge:.10,agi:68,passive:{name:'กระบี่หนักไร้คม',desc:'โจมตีธรรมดาเมินหลบ 50% (pierce dodge)'},skill:{attack:{type:'hit',factor:1.0,range:1,bypassDodge:true,uiName:'กระบี่เหล็กทมิฬ'},skill1:{type:'hit',factor:2.2,range:2,cooldown:2,mp:1,uiName:'กระบี่สาวหยก'},skill2:{type:'hit',factor:3.4,range:2,cooldown:5,mp:2,uiName:'ฝึกคลื่นทะเลคลั่ง'},skill3:{type:'fan',factor:1.8,range:2,cooldown:3,mp:1,uiName:'กวาดกระบี่สามทิศ'},ult:{type:'hit',factor:5.0,range:2,cooldown:7,mp:3,lock:true,uiName:'ฝ่ามือร้าวรานใจ'}}},
+  xiaolongnu:{name:'เซียวเล่งนึ่ง',lore:'มังกรหยก • Jade Stacker / CC + CD Reset',baseAtk:9,maxHp:110,dodge:.30,agi:94,passive:{name:'ดรุณีหยกใจพิสุทธิ์',desc:'ใช้สกิล → หยก +1 (สูงสุด 3) • ครบ 3: ฟื้น 10HP + ลด CD ทุกสกิล 1'},skill:{attack:{type:'hit',factor:1.0,range:1,uiName:'ฝ่ามือดรุณี'},skill1:{type:'hit',factor:.80,hits:2,range:2,cooldown:2,mpReduce:1,uiName:'สองมือขัดแย้ง'},skill2:{type:'hit',factor:.89,range:2,cooldown:3,stun:1,uiName:'เครือระฆังทอง'},skill3:{type:'hit',factor:.60,range:3,cooldown:4,burn:1,slow:1,uiName:'ฝูงผึ้งพิษหยก'},ult:{type:'hit',factor:.83,hits:3,range:4,cooldown:6,uiName:'กระบี่สาวหยกใจว่าง'}}},
+  yunfei:{name:'ฮุ้นปวยเอี๊ยง',lore:'กระบี่ไร้เทียมทาน • Revive / Versatile',baseAtk:9,maxHp:165,dodge:.10,agi:66,passive:{name:'เทียนฉานลอกคราบ',desc:'ตายครั้งแรก → คืนชีพ 20% HP (1 ครั้งต่อเกม)'},skill:{attack:{type:'hit',factor:.89,range:2,uiName:'กระบี่ไร้เทียมทาน'},skill1:{type:'buff',nextSkillBoost:.30,cooldown:4,uiName:'เทียนฉานสินกง'},skill2:{type:'hit',factor:1.78,hits:2,range:3,cooldown:4,uiName:'กระบี่ฝ่าเมฆ'},skill3:{type:'hit',factor:2.89,range:4,cooldown:6,uiName:'ปราณหนอนไหมสวรรค์'},ult:{type:'hit',factor:2.44,hits:3,range:4,cooldown:9,uiName:'เทียนฉานผงาดฟ้า'}}},
+  likimhwang:{name:'ลี้คิมฮวง',lore:'ฤทธิ์มีดสั้น • Long Range Sniper / Crit Pierce',baseAtk:11,maxHp:160,dodge:.15,agi:78,passive:{name:'ไม่เคยพลาดเป้า',desc:'สกิล3 และ ULT เมินหลบ 100% (bypassDodge สมบูรณ์)'},skill:{attack:{type:'hit',factor:1.0,range:2,uiName:'มีดสั้นลี้น้อย'},skill1:{type:'hit',factor:1.5,range:3,cooldown:2,mp:1,uiName:'มีดพลิ้วไร้ร่องรอย'},skill2:{type:'hit',factor:.80,hits:3,range:3,cooldown:4,mp:2,uiName:'ห่าฝนมีดบิน'},skill3:{type:'hit',factor:2.4,range:4,cooldown:6,mp:2,pierce:true,bypassDodge:true,uiName:'อันดับสามทำเนียบอาวุธ'},ult:{type:'hit',factor:4.8,range:5,cooldown:8,mp:3,pierce:true,bypassDodge:true,uiName:'มีดบินลี้คิมฮวง — ดอกสุดท้าย'}}},
+  afei:{name:'อาฮุย',lore:'ฤทธิ์มีดสั้น • Physical Assassin / Sword Rhythm',baseAtk:11,maxHp:100,dodge:.20,agi:102,passive:{name:'กระบี่ซื่อตรง',desc:'โจมตีเป้าเดิม → จังหวะกระบี่ +1 (สูงสุด 3) • ต่อชั้น: ดาเมจ +8% • เปลี่ยนเป้าชั้นหาย'},skill:{attack:{type:'hit',factor:1.27,range:1,mp:1,uiName:'กระบี่แทงตรง'},skill1:{type:'dashLine',factor:.73,hits:2,range:2,cooldown:3,mp:1,uiName:'เงากระบี่ไล่ติด'},skill2:{type:'hit',factor:2.18,range:1,cooldown:4,mp:2,uiName:'กระบี่ตัดทางหนี'},skill3:{type:'buff',nextSkillBoost:.25,dodgeBuff:.15,dodgeBuffTurns:1,cooldown:4,mp:1,uiName:'จังหวะกระบี่เร่ง'},ult:{type:'hit',factor:3.82,range:2,cooldown:7,mp:3,retreatAfter:1,uiName:'กระบี่เดียวตัดชีพ'}}},
+  weixiaobao:{name:'อุ้ยเสี่ยวป้อ',lore:'อุ้ยเสี่ยวป้อ • Trickster Support / Escape',baseAtk:8,maxHp:110,dodge:.05,agi:82,passive:{name:'พรเจ็ดยอดดวงใจ',desc:'รับดาเมจ -10% ถาวร • สกิลอาจสุ่มบัฟ (shield/dodge/mp)'},skill:{attack:{type:'hit',factor:1.0,range:1,uiName:'ลิ้นทองหว่านล้อม'},skill1:{type:'hit',factor:.875,range:3,cooldown:5,mp:1,slow:2,uiName:'โปรยผงพริกลวงตา'},skill2:{type:'hit',factor:1.75,range:3,cooldown:6,mp:2,stun:1,uiName:'แจกสินบนซื้อใจ'},skill3:{type:'buff',retreat:2,dodgeBuff:.30,dodgeBuffTurns:2,cooldown:5,mp:2,uiName:'หนีร้อยแปลงพันลีลา'},ult:{type:'buff',shield:.25,heal:.10,allAllies:true,cooldown:8,mp:3,uiName:'ใต้เท้าเสี่ยวป้อเรียกพล'}}},
+  huangdiping:{name:'หวังตี้ปิง',lore:'จอมเวทดารา • Mark Mage / AoE Burst',baseAtk:9,maxHp:160,dodge:.05,agi:58,passive:{name:'ตราดาวประหาร',desc:'ตราครบ 3 ชั้น → คริ +20% ใส่เป้านั้น (hexMark 3 stacks)'},skill:{attack:{type:'hit',factor:1.0,range:2,mp:1,hexMark:1,uiName:'กำปั้นจอมฟ้า'},skill1:{type:'mark',factor:0,range:5,cooldown:3,mp:1,damageAmp:.25,hexMark:1,uiName:'ตราอุกกาบาตล่อเป้า'},skill2:{type:'aoe',factor:2.0,range:3,radius:1,cooldown:4,mp:2,burn:1,hexMark:1,uiName:'ฝนดาวเพลิง'},skill3:{type:'hit',factor:1.8,range:4,cooldown:3,mp:1,hexMark:1,uiName:'ดาวตกเจาะเป้า'},ult:{type:'aoe',factor:3.56,range:4,radius:2,cooldown:8,mp:3,burn:2,uiName:'อุกกาบาตถล่มพิภพ'}}},
+  aqing:{name:'อาแช',lore:'กระบี่สาวแคว้นเยว่ • Multi-Hit Assassin',baseAtk:10,maxHp:160,dodge:.20,agi:92,passive:{name:'เพลงกระบี่ลิงขาว',desc:'หลบ 20% • ฮิตที่ 3+: ดาเมจ +35%'},skill:{attack:{type:'hit',factor:1.0,range:1,uiName:'กิ่งไผ่ลิงขาว'},skill1:{type:'hit',factor:1.4,hits:2,range:2,cooldown:3,mp:1,uiName:'หนึ่งกระบี่พันพล'},skill2:{type:'hit',factor:1.2,hits:3,range:2,cooldown:5,mp:2,uiName:'เงากระบี่สามพัน'},skill3:{type:'dashLine',factor:1.5,range:3,cooldown:4,mp:1,uiName:'แล่นกระบี่ทะลุแนว'},ult:{type:'hit',factor:1.4,hits:5,range:3,cooldown:8,mp:3,pierce:true,uiName:'กระบี่สาวแคว้นเยว่'}}},
+  jiept:{name:'เจี๊ยะพัวเทียน',lore:'เจาะยุทธจักร • CC Resist Brawler',baseAtk:9,maxHp:155,dodge:.10,agi:62,passive:{name:'ใจพิสุทธิ์ไร้อักษร',desc:'ต้านสับสน/ลังเล 50% (50% resist stun/slow) • รับดาเมจ -10% ถาวร'},skill:{attack:{type:'hit',factor:1.11,range:2,uiName:'หมัดเด็กไร้นาม'},skill1:{type:'hit',factor:2.22,range:3,cooldown:3,uiName:'ไท่เสวียนเก็ง'},skill2:{type:'hit',factor:1.78,hits:2,range:2,cooldown:5,uiName:'คัมภีร์ภาพผนังถ้ำ'},skill3:{type:'buff',damageReduction:.20,damageReductionTurns:2,counterBuff:.20,counterBuffTurns:2,cooldown:4,uiName:'ใจพิสุทธิ์ตั้งมั่น'},ult:{type:'hit',factor:2.89,hits:3,range:2,cooldown:8,slow:2,uiName:'บทกวีวีรบุรุษ'}}},
+  langfanwin:{name:'ล่างฟานหวิน',lore:'เทพมารสะท้านภพ • Rage Stack ATK / Burst',baseAtk:10,maxHp:185,dodge:.05,agi:64,passive:{name:'กระบี่ใจกระจ่าง',desc:'ถูกตี → ATK +8% (สะสม สูงสุด +40%) • เลือดต่ำ: ดาเมจยิ่งสูง'},skill:{attack:{type:'hit',factor:1.0,range:1,uiName:'กระบี่คลุมวรุณ'},skill1:{type:'hit',factor:2.4,range:2,cooldown:3,uiName:'คลื่นพลิกเมฆา'},skill2:{type:'hit',factor:1.2,hits:3,range:2,cooldown:5,uiName:'วารีสะท้อนจันทร์'},skill3:{type:'buff',nextSkillBoost:.25,damageReduction:.15,damageReductionTurns:2,cooldown:4,uiName:'กระจ่างใจพุ่งทะยาน'},ult:{type:'hit',factor:4.8,range:2,cooldown:8,pierce:true,uiName:'ทลายความว่าง'}}},
+
+  // === มู่หยงฟู่: Counter Striker ===
+  muyongfu:{name:'มู่หยงฟู่',lore:'เจ้าชายมู่หยง • Counter Striker / Reflect',baseAtk:9,maxHp:148,dodge:.20,agi:93,
+    passive:{name:'สะท้อนกลับ',desc:'50% โอกาสตีสวน 50% ดาเมจ ทุกครั้งที่ถูกโจมตี (ไม่ trigger จาก counter)'},
+    skill:{
+      attack:{type:'hit',factor:.85,range:1,uiName:'หมัดต้นตระกูลมู่หยง'},
+      skill1:{type:'hit',factor:.4,range:2,cooldown:2,mp:1,reflectMark:1,uiName:'ดาวเคลื่อนดาราคล้อย'},
+      skill2:{type:'hit',factor:1.0,range:2,cooldown:3,mp:2,copyPower:true,uiName:'เคล็ดวิชาร้อยสำนัก'},
+      skill3:{type:'buff',cooldown:3,mp:1,dodgeBuff:.25,dodgeBuffTurns:2,counterBuff:.35,counterBuffTurns:2,uiName:'พริ้วพลิ้วหลบเลี่ยง'},
+      ult:{type:'hit',factor:3.8,range:2,cooldown:5,mp:3,forceCrit:true,bypassDodge:true,retreatAfter:1,uiName:'กอบกู้ราชวงค์'}
+    }
+  }
+};
+const W=11,H=11,CELLW=80,CELLH=70,OX=55,OY=12,MOVE_POINTS=4;
+// Board v5.8: Hex Radius-5 Arena — 91 cells centered at (5,5) in odd-q offset grid
+// Gray=walkable  Blue(whiteCells)=void(เดินไม่ได้,สกิลผ่านได้)  Black(blocks)=wall(เดินไม่ได้,สกิลผ่านไม่ได้)  Green(hillCells)=เนิน(เดินไม่ได้,สกิลผ่านได้)
+const validCells=new Set([
+  // q=0 (even) r=3..8
+  '0,3','0,4','0,5','0,6','0,7','0,8',
+  // q=1 (odd) r=2..8
+  '1,2','1,3','1,4','1,5','1,6','1,7','1,8',
+  // q=2 (even) r=2..9
+  '2,2','2,3','2,4','2,5','2,6','2,7','2,8','2,9',
+  // q=3 (odd) r=1..9
+  '3,1','3,2','3,3','3,4','3,5','3,6','3,7','3,8','3,9',
+  // q=4 (even) r=1..10
+  '4,1','4,2','4,3','4,4','4,5','4,6','4,7','4,8','4,9','4,10',
+  // q=5 (odd) r=0..10 [center column]
+  '5,0','5,1','5,2','5,3','5,4','5,5','5,6','5,7','5,8','5,9','5,10',
+  // q=6 (even) r=1..10
+  '6,1','6,2','6,3','6,4','6,5','6,6','6,7','6,8','6,9','6,10',
+  // q=7 (odd) r=1..9
+  '7,1','7,2','7,3','7,4','7,5','7,6','7,7','7,8','7,9',
+  // q=8 (even) r=2..9
+  '8,2','8,3','8,4','8,5','8,6','8,7','8,8','8,9',
+  // q=9 (odd) r=2..8
+  '9,2','9,3','9,4','9,5','9,6','9,7','9,8',
+  // q=10 (even) r=3..8
+  '10,3','10,4','10,5','10,6','10,7','10,8'
+]);
+// Void tiles: (ไม่มีแล้ว — รวมเป็น wall หมด)
+const whiteCells=new Set([]);
+// Block tiles: เดินไม่ได้ สกิลผ่านไม่ได้ (สีดำ)
+let blocks=new Set([
+  '5,3','5,7',   // dist=2 N / S
+  '3,4','7,6',   // dist=2 NW / SE
+  '7,4','3,6',   // dist=2 NE / SW
+  '5,1','5,9',   // dist=4 N / S
+  '1,3','9,7',   // dist=4 NW / SE
+  '9,3','1,7'    // dist=4 NE / SW
+]);
+// Hill tiles: เดินไม่ได้ แต่สกิลผ่านได้ (สีเขียว) — center hex
+const hillCells=new Set(['5,5']);const DIR_ORDER=['NW','NE','E','SE','SW','W'];const DIR_TEXT={NW:'ซ้ายหน้า',NE:'หน้า',E:'ขวาหน้า',SE:'ขวาหลัง',SW:'หลัง',W:'ซ้ายหลัง'};const DIR_LABEL={NW:'◤',NE:'▲',E:'◥',SE:'◢',SW:'▼',W:'◣'};const keys=Object.keys(roster);const leaderKeys=keys.filter(k=>roster[k].isLeader);const heroKeys=keys.filter(k=>!roster[k].isLeader);let leftLeader=null,rightLeader=null,leftTeam=[],rightTeam=[],banned=[],leaderBans=[],heroBans=[],draftSideFirst='A',draftPhase='leaderBanA',units=[],order=[],turnId='',turnNo=1,gameOver=false,botBusy=false,faceMode=false;
+const RELIC_TYPES={power:{name:'Power Relic',icon:'⚔️',passive:'ATK +5%',active:'Radius 1: Skill Damage +20%',weight:24},guardian:{name:'Guardian Relic',icon:'🛡️',passive:'HP +10%',active:'Radius 1: Shield 20%',weight:22},tactical:{name:'Tactical Relic',icon:'⚡',passive:'AGI +5',active:'Radius 1: MP +1',weight:20},healing:{name:'Healing Relic',icon:'💚',passive:'Regen 3%',active:'Radius 1: Heal 15%',weight:20},void:{name:'Void Relic',icon:'🌀',passive:'Range +1',active:'Radius 1: Ignore Shield',weight:14}};
+let groundRelic=null,activeRelicBuffs=[];
+// === Battle Royale Fire Ring System ===
+const FIRE_CENTER={q:5,r:5};
+let fireCells=new Set(),fireWarnCells=new Set(),fireLevel=0;
+function id(q,r){return q+','+r}function isBoardCell(q,r){return q>=0&&q<W&&r>=0&&r<H&&validCells.has(id(q,r))}function isWall(q,r){return blocks.has(id(q,r))}function isVoid(q,r){return whiteCells.has(id(q,r))}function isHill(q,r){return hillCells.has(id(q,r))}function isWalkable(q,r){return isBoardCell(q,r)&&!isWall(q,r)&&!isVoid(q,r)&&!isHill(q,r)}function isSkillPassable(q,r){return isBoardCell(q,r)&&!isWall(q,r)}function neighbor(q,r,dir){const odd=q&1;const d={NW:odd?[-1,0]:[-1,-1],NE:[0,-1],E:odd?[1,0]:[1,-1],SE:odd?[1,1]:[1,0],SW:[0,1],W:odd?[-1,1]:[-1,0]}[dir];return{q:q+d[0],r:r+d[1]}}function cube(q,r){let x=q,z=r-(q-(q&1))/2,y=-x-z;return{x,y,z}}function dist(a,b){let ac=cube(a.q,a.r),bc=cube(b.q,b.r);return Math.max(Math.abs(ac.x-bc.x),Math.abs(ac.y-bc.y),Math.abs(ac.z-bc.z))}function inside(q,r){return isWalkable(q,r)}function pos(q,r){return{x:OX+q*57,y:OY+r*66+(q%2?33:0)}}function unitAt(q,r){return units.find(u=>u.hp>0&&u.q===q&&u.r===r)}function active(){return units.find(u=>u.id===turnId&&u.hp>0)||units.find(u=>u.hp>0)}function maxMpOf(u){return MOVE_POINTS+(u&&u.status&&u.status.movePlus?u.status.movePlus:0)+(u&&u.status&&u.status.relicMpBonus?u.status.relicMpBonus:0)+0}function hasVisionScarletSynergy(u,arr=units){if(!u||!(u.key==='vision'||u.key==='scarletwitch'))return false;return arr.some(x=>x.side===u.side&&x.key==='vision')&&arr.some(x=>x.side===u.side&&x.key==='scarletwitch')}function enemiesOf(u){return units.filter(x=>x.side!==u.side&&x.hp>0)}function skill(u,k){return roster[u.key].skill[k]}function skills(u){return Object.keys(roster[u.key].skill)}function costOf(k,s){return s.mp||(k==='ult'?3:1)}function cdLeft(u,k){return Math.max(0,u.cd[k]||0)}function rangeOf(s){return s.range||1}function effRange(u,s){return rangeOf(s)+(u.status&&u.status.rangePlus?u.status.rangePlus:0)+(u.status&&u.status.relicRangePlus?u.status.relicRangePlus:0)+(u.leaderRangeBonus||0)}function log(t){logEl.insertAdjacentHTML('afterbegin','› '+t+'<br>')}function mkStatus(){return{guard:false,shield:0,nextCrit:false,pranaUsed:false,dodgeBonusUsed:false,slow:0,noBlink:0,rangePlus:0,rangePlusTurns:0,dodgeBuff:0,dodgeBuffTurns:0,counterBuff:0,counterBuffTurns:0,movePlus:0,movePlusTurns:0,damageReduction:0,damageReductionTurns:0,damageAmp:0,damageAmpTurns:0,strangeMark:0,hawkMark:0,markNext:false,nextSkillBoost:0,solarWeaken:0,scarletHex:0,scarletHexTurns:0,relicSkillDmg:0,relicIgnoreShield:false,relicMpBonus:0,relicShield:0,relicRegen:0,relicRangePlus:0,
+  critGauge:0,diamondBody:0,rageStacks:0,rageHealUsed:false,rhythmTarget:'',rhythmStacks:0,jadeStacks:0,revivedOnce:false,compassion:0,atkDebuff:0,atkDebuffTurns:0,penanceStacks:0,penanceTurns:0,judgmentStacks:0,flowStacks:0,strangeStacks:0,reflectMark:0}}
+function frontCells(u,range){let out=[],q=u.q,r=u.r;for(let i=1;i<=range;i++){let n=neighbor(q,r,u.face);q=n.q;r=n.r;if(!isSkillPassable(q,r))break;out.push({q,r})}return out}function faceTo(a,b){let best='NE',bd=99;for(let d of DIR_ORDER){let n=neighbor(a.q,a.r,d),dd=dist(n,b);if(dd<bd){bd=dd;best=d}}return best}function fanCells(u,range){let i=DIR_ORDER.indexOf(u.face);let dirs=[u.face,DIR_ORDER[(i+5)%6],DIR_ORDER[(i+1)%6]],out=[];for(let dir of dirs){let q=u.q,r=u.r;for(let n=1;n<=range;n++){let p=neighbor(q,r,dir);q=p.q;r=p.r;if(!isSkillPassable(q,r))break;out.push({q,r})}}return out}function targets(u,k){let s=skill(u,k);if(s.type==='buff')return[u];if(s.type==='swap'||s.type==='mark')return enemiesOf(u).filter(e=>dist(u,e)<=effRange(u,s));if(s.type==='randomRadius')return enemiesOf(u).filter(e=>dist(u,e)<=s.radius);if(s.type==='fan'){let cells=fanCells(u,s.range||1);return enemiesOf(u).filter(e=>cells.some(c=>c.q===e.q&&c.r===e.r))}if(s.type==='aoe'){let line=frontCells(u,effRange(u,s));return enemiesOf(u).filter(e=>line.some(c=>dist(c,e)<= (s.radius||0)))}if(s.type==='dashLine'){let line=frontCells(u,effRange(u,s));return enemiesOf(u).filter(e=>line.some(c=>c.q===e.q&&c.r===e.r))}if(s.type==='leapAoE'){let land=bestLeap(u,s.range||2);return land?enemiesOf(u).filter(e=>dist(land,e)<=s.radius):[]}let line=frontCells(u,effRange(u,s));let arr=[];for(let c of line){let t=enemiesOf(u).find(e=>e.q===c.q&&e.r===c.r);if(t){arr.push(t);if(!s.pierce)break}}return arr}function bestLeap(u,range){let line=frontCells(u,range).filter(c=>inside(c.q,c.r)&&!unitAt(c.q,c.r));return line[line.length-1]||null}function randomEmptyWithin(c,range){let arr=[];for(let r=0;r<H;r++)for(let q=0;q<W;q++)if(inside(q,r)&&!unitAt(q,r)&&dist(c,{q,r})<=range)arr.push({q,r});return arr[Math.floor(Math.random()*arr.length)]}
+function canUse(u,k){let s=skill(u,k);if(gameOver||!u||u.id!==turnId||u.mp<costOf(k,s)||cdLeft(u,k)>0)return false;if(s.type==='buff')return true;if(s.type==='leapAoE')return !!bestLeap(u,s.range||2);return targets(u,k).length>0}function buildOrder(){order=units.filter(u=>u.hp>0).sort((a,b)=>b.agi-a.agi).map(u=>u.id)}function agiQueue(){return units.filter(u=>u.hp>0).sort((a,b)=>b.agi-a.agi).map(u=>(u.id===turnId?'▶ ':'')+u.name.replace(' BOT','')+'('+u.agi+')').join(' › ')}function render(){renderBoard();renderMiniMap();renderUI()}
+
+function relicWeightedPick(){let arr=Object.keys(RELIC_TYPES),sum=arr.reduce((a,k)=>a+(RELIC_TYPES[k].weight||1),0),r=Math.random()*sum;for(let k of arr){r-=RELIC_TYPES[k].weight||1;if(r<=0)return k}return arr[0]}
+function relicSpawnCells(){let center={q:5,r:5};let cells=[];for(let r=0;r<H;r++)for(let q=0;q<W;q++)if(isWalkable(q,r)&&dist({q,r},center)<=2&&!fireCells.has(id(q,r))&&!unitAt(q,r))cells.push({q,r});return cells}
+// === Fire Ring: activate cells at exactly distLevel from center, +cumulative ===
+function activateFireRing(distLevel){
+  fireWarnCells.clear();
+  for(let cell of validCells){
+    let[q,r]=cell.split(',').map(Number);
+    if(dist({q,r},FIRE_CENTER)===distLevel)fireCells.add(cell);
+  }
+  fireLevel++;
+  // Next warn: one ring closer
+  if(fireLevel<3){let nextDist=distLevel-1;for(let cell of validCells){let[q,r]=cell.split(',').map(Number);if(dist({q,r},FIRE_CENTER)===nextDist&&!fireCells.has(cell))fireWarnCells.add(cell)}}
+  floatAt(FIRE_CENTER,'🔥 FIRE RING '+fireLevel,'ult');
+  log(`🔥 FIRE RING ${fireLevel}/3 — วงไฟ dist=${distLevel}+ ลุกไหม้! ถอยเข้ากลาง`);
+  render();
+}
+function updateFireWarn(){
+  // show orange warning ring 1 round before fire activates
+  fireWarnCells.clear();
+  let nextFireDist=[5,4,3][fireLevel];
+  if(nextFireDist!==undefined){
+    for(let cell of validCells){let[q,r]=cell.split(',').map(Number);if(dist({q,r},FIRE_CENTER)===nextFireDist&&!fireCells.has(cell))fireWarnCells.add(cell)}
+  }
+}
+function spawnRelic(){if(groundRelic)return;let cells=relicSpawnCells();if(!cells.length)return;let c=cells[Math.floor(Math.random()*cells.length)],type=relicWeightedPick();groundRelic={type,q:c.q,r:c.r,activeRound:turnNo+1,cap:{ally:0,enemy:0},locked:true,dropped:false};log(`✨ ${RELIC_TYPES[type].name} ตกกลางแผนที่ • เริ่มยึดได้ Round ${groundRelic.activeRound}`)}
+function updateRelicLock(){if(groundRelic&&turnNo>=groundRelic.activeRound)groundRelic.locked=false}
+function unitsInRelicZone(side){if(!groundRelic||groundRelic.locked)return[];return units.filter(u=>u.hp>0&&u.side===side&&dist(u,{q:groundRelic.q,r:groundRelic.r})<=1)}
+function processRelicCapture(){if(!groundRelic||groundRelic.locked||gameOver)return;let a=unitsInRelicZone('ally'),b=unitsInRelicZone('enemy');if(!a.length&&!b.length)return;if(a.length===b.length){log(`Relic contested ${a.length}:${b.length}`);return}let side=a.length>b.length?'ally':'enemy';groundRelic.cap[side]++;groundRelic.cap[side==='ally'?'enemy':'ally']=0;log(`${side==='ally'?'ผู้เล่น':'BOT'} คุม Relic +1 (${groundRelic.cap[side]}/2)`);if(groundRelic.cap[side]>=2){let pool=(side==='ally'?a:b).slice().sort((x,y)=>dist(x,groundRelic)-dist(y,groundRelic));let holder=pool.find(u=>!u.relic)||pool[0];giveRelic(holder,groundRelic.type);groundRelic=null}}
+function applyRelicPassive(u,type){let r=RELIC_TYPES[type];if(!u||!r)return;if(type==='power'){u.atk=Math.max(1,Math.round(u.atk*1.05));floatAt(u,'RELIC ATK +5%','buff')}if(type==='guardian'){let add=Math.round(u.maxHp*.10);u.relicHpBonus=(u.relicHpBonus||0)+add;u.maxHp+=add;u.hp+=add;floatAt(u,'RELIC HP +10%','buff')}if(type==='tactical'){u.agi+=5;floatAt(u,'RELIC AGI +5','buff');buildOrder()}if(type==='healing'){u.status.relicRegen=.03;floatAt(u,'RELIC REGEN','buff')}if(type==='void'){u.status.relicRangePlus=1;floatAt(u,'RELIC RANGE +1','buff')}}
+function removeRelicPassive(u){if(!u||!u.relic)return;let type=u.relic.type;if(type==='power'){u.atk=Math.max(1,Math.round(u.atk/1.05))}if(type==='guardian'){let add=u.relicHpBonus||0;u.maxHp=Math.max(1,u.maxHp-add);u.hp=Math.min(u.hp,u.maxHp);u.relicHpBonus=0}if(type==='tactical'){u.agi-=5;buildOrder()}if(type==='healing'){u.status.relicRegen=0}if(type==='void'){u.status.relicRangePlus=0}u.relic=null}
+function giveRelic(u,type){if(!u)return;if(u.relic){removeRelicPassive(u)}u.relic={type,acquiredRound:turnNo,expireRound:turnNo+3,used:false};applyRelicPassive(u,type);log(`${u.name} ได้ ${RELIC_TYPES[type].name} • Passive ${RELIC_TYPES[type].passive}`);floatAt(u,RELIC_TYPES[type].icon+' RELIC','ult')}
+function expireOldRelics(){for(let u of units){if(u.relic&&turnNo>u.relic.expireRound){log(`${RELIC_TYPES[u.relic.type].name} ของ ${u.name} สลาย`);floatAt(u,'RELIC BREAK','crit');removeRelicPassive(u)}}}
+function dropRelicFromDead(){for(let u of units){if(u.hp<=0&&u.relic){let type=u.relic.type;removeRelicPassive(u);if(!groundRelic){groundRelic={type,q:u.q,r:u.r,activeRound:turnNo+1,cap:{ally:0,enemy:0},locked:true,dropped:true};log(`${RELIC_TYPES[type].name} ตกจาก ${u.name} • Round ถัดไปยึดใหม่ได้`)}}}}
+function expireRelicBuffsForOwner(ownerId){let remain=[];for(let e of activeRelicBuffs){if(e.ownerId!==ownerId){remain.push(e);continue}for(let tid of e.targetIds){let t=units.find(u=>u.id===tid);if(!t)continue;if(e.type==='power')t.status.relicSkillDmg=Math.max(0,(t.status.relicSkillDmg||0)-.20);if(e.type==='guardian'&&e.shields&&e.shields[tid]){let rm=e.shields[tid];t.status.shield=Math.max(0,(t.status.shield||0)-rm);t.status.relicShield=Math.max(0,(t.status.relicShield||0)-rm)}if(e.type==='tactical')t.status.relicMpBonus=Math.max(0,(t.status.relicMpBonus||0)-1);if(e.type==='void')t.status.relicIgnoreShield=false;floatAt(t,'RELIC OFF','buff')}}activeRelicBuffs=remain}
+function relicTargets(u){return units.filter(x=>x.hp>0&&x.side===u.side&&dist(x,u)<=1)}
+function useRelic(){let u=active();if(!u||!u.relic||u.relic.used||gameOver||botBusy&&u.side==='ally')return;let type=u.relic.type,targets=relicTargets(u),entry={ownerId:u.id,type,targetIds:targets.map(t=>t.id),shields:{}};if(type==='power'){targets.forEach(t=>{t.status.relicSkillDmg=Math.max(t.status.relicSkillDmg||0,.20);floatAt(t,'SKILL +20%','crit')});activeRelicBuffs.push(entry)}else if(type==='guardian'){targets.forEach(t=>{let sh=Math.round(t.maxHp*.20);t.status.shield=(t.status.shield||0)+sh;t.status.relicShield=(t.status.relicShield||0)+sh;entry.shields[t.id]=sh;floatAt(t,'SHIELD +20%','buff')});activeRelicBuffs.push(entry)}else if(type==='tactical'){targets.forEach(t=>{t.status.relicMpBonus=Math.max(t.status.relicMpBonus||0,1);t.mp=Math.min(maxMpOf(t),t.mp+1);floatAt(t,'MP +1','heal')});activeRelicBuffs.push(entry)}else if(type==='healing'){targets.forEach(t=>heal(t,Math.round(t.maxHp*.15)))}else if(type==='void'){targets.forEach(t=>{t.status.relicIgnoreShield=true;floatAt(t,'IGNORE SHIELD','crit')});activeRelicBuffs.push(entry)}log(`${u.name} ใช้ ${RELIC_TYPES[type].name} • Aura Radius 1 • จบ Turn`);removeRelicPassive(u);render();setTimeout(endTurn,320)}
+function relicInfoHtml(u){if(!u||!u.relic)return '<span class="sub">Relic: -</span>';let r=RELIC_TYPES[u.relic.type];return `<span class="relicChip">${r.icon} ${r.name}</span><div class=sub>Passive: ${r.passive}<br>Active: ${r.active}<br>หมดอายุ Round ${u.relic.expireRound}</div>`}
+function renderMiniMap(){if(!miniMapDots)return;let html='<div class="miniMapGrid">';for(let b of blocks){let[q,r]=b.split(',').map(Number);html+=`<i class="miniDot block" style="left:${q*8}px;top:${r*6}px"></i>`}for(let w of whiteCells){let[q,r]=w.split(',').map(Number);html+=`<i class="miniDot void" style="left:${q*8}px;top:${r*6}px"></i>`}for(let h of hillCells){let[q,r]=h.split(',').map(Number);html+=`<i style="position:absolute;width:6px;height:6px;border-radius:2px;background:#3a7a1a;left:${q*8}px;top:${r*6}px;box-shadow:0 0 3px #5ab82a"></i>`}for(let f of fireCells){let[q,r]=f.split(',').map(Number);html+=`<i style="position:absolute;width:5px;height:5px;border-radius:50%;background:#ff4500;left:${q*8}px;top:${r*6}px;box-shadow:0 0 4px #ff6600"></i>`}for(let u of units.filter(x=>x.hp>0)){html+=`<i class="miniDot ${u.side==='ally'?'ally':'enemy'}" style="left:${u.q*8}px;top:${u.r*6}px"></i>`}miniMapDots.innerHTML=html+'</div>'}
+function renderBoard(){board.innerHTML='';let u=active(),front=new Set(),first=null;if(u&&!gameOver){let maxR=Math.max(...skills(u).map(k=>effRange(u,skill(u,k))));frontCells(u,maxR).forEach(c=>front.add(id(c.q,c.r)));for(let c of frontCells(u,maxR)){if(enemiesOf(u).some(e=>e.q===c.q&&e.r===c.r)){first=id(c.q,c.r);break}}}for(let r=0;r<H;r++)for(let q=0;q<W;q++){if(!validCells.has(id(q,r)))continue;let p=pos(q,r),c=document.createElement('button');c.className='cell';c.style.left=p.x+'px';c.style.top=p.y+'px';if(blocks.has(id(q,r)))c.classList.add('block');else if(whiteCells.has(id(q,r)))c.classList.add('white');else if(hillCells.has(id(q,r)))c.classList.add('hill');if(fireCells.has(id(q,r)))c.classList.add('fire');else if(fireWarnCells.has(id(q,r)))c.classList.add('fireWarn');if(groundRelic&&dist({q,r},{q:groundRelic.q,r:groundRelic.r})<=1)c.classList.add('relicZone');if(groundRelic&&groundRelic.q===q&&groundRelic.r===r)c.classList.add('relicCenter');let occ=unitAt(q,r);if(u&&u.side==='ally'&&!botBusy){if(dist(u,{q,r})===1&&inside(q,r)&&!occ)c.classList.add('move');if(front.has(id(q,r)))c.classList.add('front');if(first===id(q,r))c.classList.add('target')}c.onclick=()=>clickCell(q,r);board.appendChild(c);if(groundRelic&&groundRelic.q===q&&groundRelic.r===r)renderRelic(p);if(occ)renderUnit(occ,p)}}
+function renderRelic(p){let r=RELIC_TYPES[groundRelic.type];let div=document.createElement('div');div.className='relicObj '+(groundRelic.locked?'locked':'active');div.style.left=(p.x+38)+'px';div.style.top=(p.y+35)+'px';div.innerHTML=`${r.icon}<span class=cap>${groundRelic.locked?'LOCK':'CAP'} ${groundRelic.cap.ally}/${groundRelic.cap.enemy}</span>`;board.appendChild(div)}
+function renderUnit(u,p){let div=document.createElement('div');div.className='unit '+(u.side==='ally'?'ally':'enemy')+(u.id===turnId?' current':'');div.style.left=(p.x+38)+'px';div.style.top=(p.y+35)+'px';let inFire=fireCells.has(id(u.q,u.r));div.innerHTML=`<div class=name>${u.isLeader?'👑 ':''}${inFire?'🔥':''}${u.name}${u.id===turnId?' ★':''}</div><div class=pawn></div><div class="faceTri f${u.face}"></div><div class=agi>AGI ${u.agi}</div><div class=hpmini><i style="width:${Math.max(0,u.hp/u.maxHp*100)}%"></i></div>`;div.onclick=e=>{e.stopPropagation();openHeroModal(u.id)};board.appendChild(div)}
+function portrait(u){return`<div class=portrait><div class=avatar>${u.side==='ally'?'🟢':'🔴'}</div><div><div class=title>${u.name}</div><div class=sub>HP ${u.hp}/${u.maxHp} • AGI ${u.agi} • หัน ${DIR_TEXT[u.face]}</div></div></div><div class=bar><div class=hp style="width:${u.hp/u.maxHp*100}%"></div></div><div class=sub>MP ${u.mp}/${maxMpOf(u)}</div><div class=bar><div class=mp style="width:${Math.min(100,u.mp/maxMpOf(u)*100)}%"></div></div>`}function teamList(side){return units.filter(u=>u.side===side).map(u=>`${u.isLeader?'👑 ':''}${u.side==='ally'?'🟢':'🔴'} ${u.name} HP ${u.hp}/${u.maxHp} AGI ${u.agi}${u.id===turnId?' ★':''}`).join('<br>')}function hexPadHtml(){return`<div id=hexPad class="hexPad ${faceMode?'faceMode':''}">
+<button class="hexBtn NE" data-dir="NE"><i class="dirArrow up"></i><i class="hexIcon"></i><b class="hot">E</b><span class="label">หน้า</span></button>
+<button class="hexBtn NW" data-dir="NW"><i class="dirArrow left"></i><i class="hexIcon"></i><b class="hot">Q</b><span class="label">ซ้ายหน้า</span></button>
+<button class="hexBtn E" data-dir="E"><i class="dirArrow right"></i><i class="hexIcon"></i><b class="hot">R</b><span class="label">ขวาหน้า</span></button>
+<button class="hexBtn center" id="faceModeBtn"><i class="hexIcon"></i><b class="hot">O</b><span class="label">${faceMode?'โหมดหัน':'โหมดเดิน'}</span></button>
+<button class="hexBtn W" data-dir="W"><i class="dirArrow left"></i><i class="hexIcon"></i><b class="hot">Z</b><span class="label">ซ้ายหลัง</span></button>
+<button class="hexBtn SE" data-dir="SE"><i class="dirArrow right"></i><i class="hexIcon"></i><b class="hot">C</b><span class="label">ขวาหลัง</span></button>
+<button class="hexBtn SW" data-dir="SW"><i class="dirArrow down"></i><i class="hexIcon"></i><b class="hot">X</b><span class="label">หลัง</span></button>
+</div>`}
+
+function skillIcon(u,k){
+  const map={
+    chiufong:   {attack:'👊',skill1:'🐉',skill2:'⚡',skill3:'🌪️',ult:'🔥'},
+    zhang:      {attack:'☯️',skill1:'🗡️',skill2:'🌀',skill3:'💫',ult:'⚡'},
+    guojing:    {attack:'✊',skill1:'🌊',skill2:'💥',skill3:'🌀',ult:'🦅'},
+    zhangwuji:  {attack:'🔥',skill1:'💧',skill2:'🌊',skill3:'🛡️',ult:'🔥'},
+    yideng:     {attack:'☝️',skill1:'💚',skill2:'✨',skill3:'🔒',ult:'🌟'},
+    yenhuo:     {attack:'👋',skill1:'☀️',skill2:'🌙',skill3:'⭐',ult:'💫'},
+    wangyuyan:  {attack:'👆',skill1:'🌸',skill2:'💧',skill3:'👁️',ult:'🌫️'},
+    duanyu:     {attack:'☝️',skill1:'🌊',skill2:'💨',skill3:'✨',ult:'🗡️'},
+    dingchunqiu:{attack:'✋',skill1:'💀',skill2:'☠️',skill3:'🌫️',ult:'🐍'},
+    lenghu:     {attack:'⚔️',skill1:'💥',skill2:'🗡️',skill3:'💨',ult:'⚡'},
+    dongfang:   {attack:'🪡',skill1:'☀️',skill2:'👻',skill3:'💨',ult:'☀️'},
+    luksiaofeng:{attack:'☝️',skill1:'🤏',skill2:'🏃',skill3:'💨',ult:'🦢'},
+    fangzheng:  {attack:'☝️',skill1:'🙏',skill2:'🛡️',skill3:'💫',ult:'🙏'},
+    kongjian:   {attack:'👊',skill1:'🔔',skill2:'🛡️',skill3:'💥',ult:'🔔'},
+    xiexun:     {attack:'👊',skill1:'🦁',skill2:'🛡️',skill3:'💢',ult:'🦁'},
+    yeegor:     {attack:'⚔️',skill1:'🗡️',skill2:'🌊',skill3:'💥',ult:'💔'},
+    xiaolongnu: {attack:'❄️',skill1:'🤲',skill2:'🔗',skill3:'🐝',ult:'❄️'},
+    yunfei:     {attack:'🗡️',skill1:'✨',skill2:'💨',skill3:'🌙',ult:'🌙'},
+    likimhwang: {attack:'🔪',skill1:'💨',skill2:'🌧️',skill3:'🎯',ult:'🔪'},
+    afei:       {attack:'🗡️',skill1:'⚔️',skill2:'✂️',skill3:'💨',ult:'⚔️'},
+    weixiaobao: {attack:'👅',skill1:'🌶️',skill2:'💰',skill3:'🏃',ult:'📯'},
+    huangdiping:{attack:'⭐',skill1:'🌑',skill2:'🌠',skill3:'💫',ult:'☄️'},
+    aqing:      {attack:'🐒',skill1:'⚔️',skill2:'⚡',skill3:'💨',ult:'⚔️'},
+    jiept:      {attack:'👊',skill1:'📜',skill2:'🖼️',skill3:'🧘',ult:'📜'},
+    langfanwin: {attack:'⚔️',skill1:'🌊',skill2:'💧',skill3:'⚡',ult:'💥'},
+    muyongfu:   {attack:'👊',skill1:'🌀',skill2:'📖',skill3:'🌪️',ult:'🏯'},
+  };
+  return (map[u.key]&&map[u.key][k])||'⚡';
+}
+function skillMaxCd(u,k){let s=skill(u,k);return s.cooldown||0}
+function skillReadyState(u,k){
+  let s=skill(u,k),cd=cdLeft(u,k),cost=costOf(k,s),max=skillMaxCd(u,k);
+  if(cd>0)return {code:'cooling',text:'CD '+cd,detail:`${cd} Turns Remaining`,pct:max?Math.max(0,Math.round((max-cd)/max*100)):0};
+  if(u.mp<cost)return {code:'needmp',text:'Need MP '+cost,detail:`ต้องใช้ MP ${cost}`,pct:100};
+  return {code:'ready',text:'READY',detail:'พร้อมใช้',pct:100};
+}
+function expectedDamage(u,k){let s=skill(u,k);if(!s.factor)return '—';let atk=u.atk||roster[u.key].baseAtk||0;return '≈ '+Math.round(atk*s.factor)}
+function aiPriority(k,s){if(k==='ult')return 'HIGH';if(s.mpReduce||s.lock||s.hits||s.factor>=1.5)return 'HIGH';if(s.type==='buff'||s.shield||s.dodgeBuff)return 'MEDIUM';return 'LOW'}
+function mobaSkillBtn(u,k,cls,label){
+  let s=skill(u,k),ready=canUse(u,k),cd=cdLeft(u,k),st=skillReadyState(u,k),max=skillMaxCd(u,k);
+  let btn=document.createElement('button');
+  btn.className='mobaBtn '+cls+' '+st.code+(ready?' ready':'')+(k==='ult'?' ult':'');
+  btn.style.setProperty('--pct',st.pct);
+  btn.disabled=u.side!=='ally'||botBusy||!ready;
+  btn.title=`${s.uiName} • ${st.text} • MP ${costOf(k,s)} • CD ${cd}/${max} • Range ${effRange(u,s)} • Damage ${expectedDamage(u,k)}`;
+  let center = cd?`<span class="cd">${cd}</span>`:(st.code==='needmp'?`<span class="cd">MP</span>`:'');
+  btn.innerHTML=`<span class="ring"></span><span class="state">${st.text}</span><span class="ico">${skillIcon(u,k)}</span><span class="num">${label}</span>${center}<span class="label">${k==='attack'?'BASIC':k==='ult'?'ULT':s.uiName}</span>`;
+  btn.onclick=()=>useSkill(u,k);
+  return btn;
+}
+function useUtility(type){
+  let u=active();if(!u||u.side!=='ally'||botBusy||u.mp<1)return;
+  if(type==='guard'){
+    u.mp--;u.status.guard=true;floatAt(u,'ตั้งรับ','buff');log(`${u.name} ตั้งรับ`);render();autoEnd(u);return;
+  }
+  if(type==='prana'){
+    if(u.status.pranaUsed)return;
+    u.mp--;u.status.pranaUsed=true;skills(u).forEach(k=>u.cd[k]=Math.max(0,(u.cd[k]||0)-1));floatAt(u,'ฝึกปราณ -1 CD','buff');log(`${u.name} ฝึกปราณ`);render();autoEnd(u);return;
+  }
+}
+function renderUI(){let u=active();if(!u)return;turnPill.textContent=`Wuxia Arena • Turn ${turnNo} • ${u.side==='ally'?'ผู้เล่น':'BOT'} • ${u.name} • MP ${u.mp}/${maxMpOf(u)}`;leftInfo.innerHTML=portrait(u)+`<div class=sub><b>ทีมผู้เล่น</b><br>${teamList('ally')}<hr><b>ทีม BOT</b><br>${teamList('enemy')}<br><br>Turn เรียงตาม AGI</div><div class=agiQueue><b>AGI Queue</b><br>${agiQueue()}</div><h2>ปุ่มเดิน / หันหน้า</h2><div class=sub>กด O แล้วกดทิศ = หันหน้าอย่างเดียว ใช้ 1 MP</div>${hexPadHtml()}`;
+  skillPanel.innerHTML='';
+  skillPanel.appendChild(mobaSkillBtn(u,'skill1','s1','1'));
+  skillPanel.appendChild(mobaSkillBtn(u,'skill2','s2','2'));
+  skillPanel.appendChild(mobaSkillBtn(u,'skill3','s3','3'));
+  skillPanel.appendChild(mobaSkillBtn(u,'ult','ult','ULT'));
+  skillPanel.appendChild(mobaSkillBtn(u,'attack','basic','BASIC'));
+  let util=document.createElement('div');util.className='mobaUtil';
+  let guardDisabled=(u.side!=='ally'||u.mp<1||botBusy)?'disabled':'';
+  let pranaDisabled=(u.status.pranaUsed||u.side!=='ally'||u.mp<1||botBusy)?'disabled':'';
+  let relicDisabled=(u.side!=='ally'||!u.relic||botBusy)?'disabled':'';
+  util.innerHTML=`<button class="${guardDisabled?'':'ready'}" title="ตั้งรับ 1 MP" ${guardDisabled}><b>🛡️</b><span>ตั้งรับ</span></button><button class="${pranaDisabled?'':'ready'}" title="ฝึกปราณ 1 MP ลด CD" ${pranaDisabled}><b>🧘</b><span>ฝึกปราณ</span></button><button class="${relicDisabled?'':'ready'}" title="ใช้ Relic 0 MP แล้วจบ Turn" ${relicDisabled}><b>💠</b><span>Relic</span></button>`;
+  util.children[0].onclick=()=>useUtility('guard');
+  util.children[1].onclick=()=>useUtility('prana');
+  util.children[2].onclick=()=>useRelic();
+  skillPanel.appendChild(util);
+  document.querySelectorAll('.hexBtn[data-dir]').forEach(b=>b.onclick=()=>handleDir(b.dataset.dir));$('faceModeBtn').onclick=()=>{faceMode=!faceMode;renderUI()}}
+function clickCell(q,r){let u=active();if(!u||u.side!=='ally'||botBusy)return;if(dist(u,{q,r})===1){let dir=DIR_ORDER.find(d=>{let n=neighbor(u.q,u.r,d);return n.q===q&&n.r===r});if(dir){faceMode=false;moveOrFace(u,dir)}}}function handleDir(dir){let u=active();if(!u||u.side!=='ally'||botBusy||u.mp<1)return;if(faceMode)turnFace(u,dir);else moveOrFace(u,dir)}function turnFace(u,dir){u.face=dir;u.mp--;faceMode=false;log(`${u.name} หันหน้า ${DIR_TEXT[dir]}`);render();autoEnd(u)}function moveOrFace(u,dir){if(!u||u.mp<1)return;let n=neighbor(u.q,u.r,dir);u.face=dir;if(inside(n.q,n.r)&&!unitAt(n.q,n.r)){u.q=n.q;u.r=n.r;log(`${u.name} เดิน ${DIR_TEXT[dir]}`)}else log(`${u.name} หัน ${DIR_TEXT[dir]} / เดินไม่ได้`);u.mp--;faceMode=false;render();autoEnd(u)}
+function useSkill(u,k){
+  if(!canUse(u,k))return;
+  let s=skill(u,k);
+  u.mp-=costOf(k,s);
+  if(s.cooldown)u.cd[k]=s.cooldown;
+
+  // jadeStacks: xiaolongnu gains jade on skill use (not basic)
+  if(u.key==='xiaolongnu'&&k!=='attack'){
+    u.status.jadeStacks=Math.min(3,(u.status.jadeStacks||0)+1);
+    floatAt(u,'JADE '+u.status.jadeStacks+'/3','buff');
+    if(u.status.jadeStacks>=3){u.status.jadeStacks=0;heal(u,10);skills(u).forEach(sk=>u.cd[sk]=Math.max(0,(u.cd[sk]||0)-1));floatAt(u,'JADE RESET','ult');log(u.name+' หยกครบ 3 — ฟื้น 10HP + ลด CD ทุกสกิล 1')}
+  }
+  // compassionStacks: yideng healer aura (handled in buff application)
+
+  if(s.type==='buff'){
+    let buffTargets=s.allAllies?units.filter(x=>x.side===u.side&&x.hp>0):[u];
+    buffTargets.forEach(bt=>{
+      if(s.nextCrit)bt.status.nextCrit=true;
+      if(s.shield){bt.status.shield=Math.max(bt.status.shield||0,Math.round(bt.maxHp*s.shield));floatAt(bt,'SHIELD','buff')}
+      if(s.heal)heal(bt,Math.round(bt.maxHp*s.heal));
+      if(s.penance&&bt.id===u.id){bt.status.penanceStacks=Math.min(3,bt.status.penanceStacks+1);bt.status.penanceTurns=3;floatAt(bt,'PENANCE','buff')}
+      if(s.rangePlus){bt.status.rangePlus=s.rangePlus;bt.status.rangePlusTurns=2;floatAt(bt,'RANGE +'+s.rangePlus,'buff')}
+      if(s.dodgeBuff){bt.status.dodgeBuff=Math.max(bt.status.dodgeBuff||0,s.dodgeBuff);bt.status.dodgeBuffTurns=Math.max(bt.status.dodgeBuffTurns||0,s.dodgeBuffTurns||2);floatAt(bt,'DODGE +'+Math.round(s.dodgeBuff*100)+'%','buff')}
+      if(s.counterBuff){bt.status.counterBuff=s.counterBuff;bt.status.counterBuffTurns=s.counterBuffTurns||2;floatAt(bt,'COUNTER +'+Math.round(s.counterBuff*100)+'%','buff')}
+      if(s.movePlus){bt.status.movePlus=s.movePlus;bt.status.movePlusTurns=s.movePlusTurns||2;floatAt(bt,'MOVE +'+s.movePlus,'buff')}
+      if(s.damageReduction){bt.status.damageReduction=Math.max(bt.status.damageReduction||0,s.damageReduction);bt.status.damageReductionTurns=Math.max(bt.status.damageReductionTurns||0,s.damageReductionTurns||2);floatAt(bt,'DR -'+Math.round(s.damageReduction*100)+'%','buff')}
+      if(s.markNext)bt.status.markNext=true;
+      if(s.nextSkillBoost){bt.status.nextSkillBoost=Math.max(bt.status.nextSkillBoost||0,s.nextSkillBoost);floatAt(bt,'NEXT SKILL +'+Math.round(s.nextSkillBoost*100)+'%','crit')}
+    });
+    if(s.markNext)floatAt(u,'MARK NEXT','buff');
+    if(s.blink&&!u.status.noBlink){let land=bestLeap(u,s.blink);if(land){u.q=land.q;u.r=land.r}}
+    if(s.retreat&&!u.status.noBlink)retreat(u,s.retreat);
+    floatAt(u,s.allAllies?'TEAM BUFF':'BUFF','buff');log(`${u.name} ใช้ ${s.uiName}`);
+  }else if(s.type==='swap'){
+    let ts=targets(u,k);if(ts[0]){let t=ts[0],oq=u.q,or=u.r;u.q=t.q;u.r=t.r;t.q=oq;t.r=or;floatAt(t,'PORTAL','buff');log(`${u.name} สลับตำแหน่งกับ ${t.name}`)}
+  }else if(s.type==='mark'){
+    let ts=targets(u,k);if(ts[0]){ts[0].status.strangeMark=2;floatAt(ts[0],'MARK','buff');log(`${u.name} ใช้ ${s.uiName} ใส่ ${ts[0].name}`)}
+  }else if(s.type==='randomRadius'){
+    for(let i=0;i<(s.hits||5);i++){let pool=targets(u,k);if(pool.length)attack(u,pool[Math.floor(Math.random()*pool.length)],s,k,i===0)}
+  }else if(s.type==='leapAoE'){
+    let land=bestLeap(u,s.range);
+    if(land){u.q=land.q;u.r=land.r;enemiesOf(u).filter(t=>dist(land,t)<=s.radius).forEach(t=>attack(u,t,s,k))}
+  }else{
+    let ts=targets(u,k);
+    {
+        ts.forEach(t=>attack(u,t,s,k));
+    }
+    
+      
+      
+    if(s.follow&&ts[0])follow(u,ts[0],s.follow);
+    if(s.selfRetreat&&!u.status.noBlink)retreat(u,s.selfRetreat);
+    if(s.retreatAfter&&!u.status.noBlink)retreat(u,s.retreatAfter);
+  }
+  
+  render();checkWin();autoEnd(u)
+}
+
+function hasRonanGuardAura(t){return units.some(x=>x.hp>0&&x.side===t.side&&x.key==='ronan'&&x.id!==t.id&&dist(x,t)<=1)}
+function applyScarletHex(a,t,s,k){
+  if(k==='counter')return 0;
+  let add=s.hexMark||0;
+  if(add>0){
+    t.status.scarletHex=Math.min(3,(t.status.scarletHex||0)+add);
+    t.status.scarletHexTurns=3;
+    floatAt(t,'MARK '+t.status.scarletHex,'buff');
+  }
+  // huangdiping: at 3 marks → forceCrit next hit on that target
+  if((t.status.scarletHex||0)>=3&&a.key==='huangdiping'){
+    t.status.nextCrit=true;
+    t.status.scarletHex=0;
+    t.status.scarletHexTurns=0;
+    floatAt(t,'MARK CRIT!','ult');
+    log(`${a.name} ตราครบ 3 → คริ 100% ใส่ ${t.name}!`);
+    return 0;
+  }
+  return 0;
+}
+function pullToward(center,t,steps){
+  for(let i=0;i<steps;i++){
+    let best=null,bd=dist(t,center);
+    for(let d of DIR_ORDER){let n=neighbor(t.q,t.r,d);if(!inside(n.q,n.r)||unitAt(n.q,n.r))continue;let dd=dist(n,center);if(dd<bd){bd=dd;best=n}}
+    if(best){t.q=best.q;t.r=best.r}else break;
+  }
+}
+
+function tryLeaderDeathSave(t){
+  if(!t||t.hp>0)return false;
+  // Yunfei: revive once at 20% HP
+  if(t.key==='yunfei'&&!t.status.revivedOnce){
+    t.status.revivedOnce=true;t.hp=Math.round(t.maxHp*.20);
+    floatAt(t,'⚡ คืนชีพ 20%','ult');log(`${t.name} เทียนฉานลอกคราบ — คืนชีพ 20% HP!`);return true;
+  }
+  if(!t.isLeader)return false;
+  return false;
+}
+function attack(a,t,s,k,forceHit=false){
+  // reflectMark (muyongfu skill1): ถ้าผู้โจมตีมี mark → โจมตีสะท้อนกลับตัวเอง
+  if(a.status.reflectMark&&k!=='counter'){
+    let reflectDmg=Math.round(a.atk*(s.factor||1));
+    a.status.reflectMark=0;
+    a.hp=Math.max(0,a.hp-reflectDmg);tryLeaderDeathSave(a);
+    floatAt(a,'🌀 REFLECT! -'+reflectDmg,'ult');
+    floatAt(t,'สะท้อน!','buff');
+    log(`${t.name} ดาวเคลื่อนฯ สะท้อน ${a.name} -${reflectDmg}!`);
+    render();checkWin();
+    return;
+  }
+  let dodgeNow=t.dodge+(t.status.dodgeBuff||0);
+  dodgeNow=Math.min(.80,dodgeNow);
+  let bypass=s.bypassDodge||false;
+  if(!forceHit&&!s.lock&&!bypass&&Math.random()<dodgeNow){
+    floatAt(t,'MISS','buff');
+    // dongfang: post-dodge skill boost +25%
+    if(t.key==='dongfang'&&!t.status.dodgeBonusUsed){t.status.nextSkillBoost=Math.max(t.status.nextSkillBoost||0,.25);t.status.dodgeBonusUsed=true;floatAt(t,'EVASION BOOST','buff')}
+    // luksiaofeng: counter 12 flat + heal 6
+    if(t.key==='luksiaofeng'&&k!=='counter'){floatAt(t,'COUNTER 12','crit');a.hp=Math.max(0,a.hp-12);tryLeaderDeathSave(a);heal(t,6)}
+    // duanyu: pulse stack on dodge
+    if(t.key==='duanyu'){t.status.rhythmStacks=Math.min(2,(t.status.rhythmStacks||0)+1);floatAt(t,'PULSE +1','buff')}
+    return
+  }
+  let atk=a.atk;
+  if(a.status.atkDebuff)atk=Math.max(1,Math.round(atk*(1-a.status.atkDebuff)));
+  // copyPower (muyongfu skill2): ใช้ ATK ของเป้าหมายแทน
+  if(s.copyPower){atk=t.atk;floatAt(a,'ยืมวิชา!','crit')}
+  // rhythmStacks (afei): same-target stacks +8%/stack
+  if(a.key==='afei'&&k!=='counter'){
+    if(a.status.rhythmTarget===t.id){a.status.rhythmStacks=Math.min(3,(a.status.rhythmStacks||0)+1)}
+    else{a.status.rhythmStacks=1;a.status.rhythmTarget=t.id}
+    if(a.status.rhythmStacks>1)atk=Math.round(atk*(1+(a.status.rhythmStacks-1)*.08));
+  }
+  // duanyu pulse: each stack gives +15% to next magic attack
+  if(a.key==='duanyu'&&k!=='attack'&&(a.status.rhythmStacks||0)>0){atk=Math.round(atk*(1+a.status.rhythmStacks*.15));a.status.rhythmStacks=0}
+  // chiufong: <50% HP +25%
+  if(a.key==='chiufong'&&a.hp<a.maxHp*.5)atk=Math.round(atk*1.25);
+  let base=Math.round(atk*(s.factor||1)),bonus=1;
+  if(a.status.nextSkillBoost&&k!=='attack'){bonus*=1+a.status.nextSkillBoost;floatAt(a,'FOCUS +'+Math.round(a.status.nextSkillBoost*100)+'%','crit');a.status.nextSkillBoost=0}
+  // critGauge (lenghu)
+  let critChance=.10+(a.status.critGauge||0);
+  let crit=s.forceCrit||a.status.nextCrit||Math.random()<critChance;
+  a.status.nextCrit=false;
+  let dmg=Math.round(base*bonus*(crit?(s.critMult||1.8):1));
+  if(t.status.guard){dmg=Math.ceil(dmg/2);t.status.guard=false}
+  if(t.status.shield&&!a.status.relicIgnoreShield){let ab=Math.min(t.status.shield,dmg);t.status.shield-=ab;dmg-=ab}
+  else if(t.status.shield&&a.status.relicIgnoreShield){floatAt(a,'SHIELD IGNORED','crit')}
+  if(t.status.damageAmp){dmg=Math.ceil(dmg*(1+t.status.damageAmp));floatAt(t,'AMP +'+Math.round(t.status.damageAmp*100)+'%','crit')}
+  if(t.status.damageReduction){dmg=Math.ceil(dmg*(1-t.status.damageReduction));floatAt(t,'DR -'+Math.round(t.status.damageReduction*100)+'%','buff')}
+  // diamondBody (kongjian): DR per stack
+  if(t.key==='kongjian'&&(t.status.diamondBody||0)>0){dmg=Math.ceil(dmg*(1-t.status.diamondBody*.04));floatAt(t,'💎 DR '+(t.status.diamondBody*4)+'%','buff')}
+  // weixiaobao: -10% permanent DR
+  if(t.key==='weixiaobao')dmg=Math.ceil(dmg*.90);
+  // jiept: -10% permanent DR
+  if(t.key==='jiept')dmg=Math.ceil(dmg*.90);
+  // xiexun: -10% permanent DR (rage passive)
+  if(t.key==='xiexun')dmg=Math.ceil(dmg*.90);
+  if(k!=='attack'&&a.status.relicSkillDmg){dmg=Math.ceil(dmg*(1+a.status.relicSkillDmg));floatAt(a,'RELIC +'+Math.round(a.status.relicSkillDmg*100)+'%','crit')}
+  let before=t.hp;t.hp=Math.max(0,t.hp-dmg);tryLeaderDeathSave(t);if(t.hp<=0)dropRelicFromDead();
+  floatAt(t,k==='ult'?'ULT -'+dmg:crit?'CRIT -'+dmg:'-'+dmg,k==='ult'?'ult':crit?'crit':'dmg');shake(dmg,k==='ult');
+  // lenghu: after crit → dodge +10% 1T
+  if(crit&&a.key==='lenghu'){a.status.dodgeBuff=Math.max(a.status.dodgeBuff||0,.10);a.status.dodgeBuffTurns=Math.max(a.status.dodgeBuffTurns||0,1);floatAt(a,'CRIT+DODGE','buff')}
+  // lifesteal
+  if(s.lifesteal&&dmg>0){let ls=Math.round(dmg*s.lifesteal);heal(a,ls);floatAt(a,'LifeSteal +'+ls,'heal')}
+  // zhang basic: heal 10% maxHP
+  if(a.key==='zhang'&&k==='attack'){heal(a,Math.round(a.maxHp*.10))}
+  // guojing extra attack: 10% chance to hit again for 50% dmg
+  if(a.key==='guojing'&&k==='attack'&&t.hp>0&&Math.random()<.10){let bonus=Math.round(a.atk*.5);t.hp=Math.max(0,t.hp-bonus);tryLeaderDeathSave(t);floatAt(t,'EXTRA -'+bonus,'crit');log(`${a.name} ตีซ้ำ (สองมือ) -${bonus}`)}
+  // diamondBody: stack on hit received
+  if(k!=='counter'){
+    if(t.key==='kongjian'){
+      t.status.diamondBody=Math.min(5,(t.status.diamondBody||0)+1);
+      floatAt(t,'💎 '+t.status.diamondBody+'/5','buff');
+      if(t.status.diamondBody>=5){t.status.nextSkillBoost=Math.max(t.status.nextSkillBoost||0,.30);heal(t,Math.round(t.maxHp*.08));t.status.diamondBody=0;floatAt(t,'💎 MAX → +30%','ult')}
+    }
+    // rageStacks (xiexun / langfanwin)
+    if(t.key==='xiexun'||t.key==='langfanwin'){
+      t.status.rageStacks=Math.min(5,(t.status.rageStacks||0)+1);
+      t.atk=Math.round(roster[t.key].baseAtk*(1+t.status.rageStacks*.08));
+      floatAt(t,'RAGE ATK '+Math.round(t.status.rageStacks*.08*100)+'%','buff');
+      if(t.status.rageStacks>=3&&!t.status.rageHealUsed){heal(t,10);t.status.damageReduction=Math.max(t.status.damageReduction||0,.40);t.status.damageReductionTurns=Math.max(t.status.damageReductionTurns||0,1);t.status.rageHealUsed=true;floatAt(t,'RAGE HEAL +10','heal')}
+    }
+  }
+  // apply status effects
+  if(s.mark||a.status.markNext){t.status.hawkMark=Math.max(t.status.hawkMark||0,s.mark||2);a.status.markNext=false;floatAt(t,'MARK','buff')}
+  if(s.burn){t.status.burn=Math.max(t.status.burn||0,s.burn);floatAt(t,'BURN','buff')}
+  if(s.slow){t.status.slow=Math.max(t.status.slow||0,s.slow);floatAt(t,'SLOW','buff')}
+  if(s.noBlink){t.status.noBlink=Math.max(t.status.noBlink||0,s.noBlink);floatAt(t,'NO BLINK','buff')}
+  if(s.solarWeaken){t.status.solarWeaken=1;floatAt(t,'SOLAR WEAK','buff')}
+  if(s.damageAmp){t.status.damageAmp=s.damageAmp;t.status.damageAmpTurns=2;floatAt(t,'AMP +'+Math.round(s.damageAmp*100)+'%','crit')}
+  if(s.stun){
+    // jiept: 50% resist stun
+    if(t.key==='jiept'&&Math.random()<.50){floatAt(t,'RESIST STUN','buff')}
+    else{t.status.stun=Math.max(t.status.stun||0,s.stun);floatAt(t,'STUN','crit')}
+  }
+  if(s.mpReduce){let old=t.mp;t.mp=Math.max(0,t.mp-s.mpReduce);if(old>t.mp)floatAt(t,'MP -'+(old-t.mp),'buff')}
+  if(s.toss){let spot=randomEmptyWithin(t,s.toss);if(spot){t.q=spot.q;t.r=spot.r;floatAt(t,'TOSS','crit')}}
+  if(s.knock)knock(a,t,s.knock);
+  if(s.pull)pullToward(a,t,s.pull||1);
+  // hexMark (huangdiping): 3 stacks = forceCrit on next hit
+  if(s.hexMark){applyScarletHex(a,t,s,k)}
+  // counterBuff: apply to self if incoming while buff is active (handled separately in startTurn)
+  if(t.hp>0&&t.status.counterBuff&&k!=='counter'){
+    let cr=t.status.counterBuff;
+    if(Math.random()<cr){floatAt(t,'COUNTER','crit');attack(t,a,roster[t.key].skill.attack,'counter',true)}
+  }
+  // muyongfu passive: 50% reflect 50% dmg back to attacker
+  if(t.hp>0&&t.key==='muyongfu'&&k!=='counter'&&dmg>0&&Math.random()<.50){
+    let ref=Math.round(dmg*.50);
+    a.hp=Math.max(0,a.hp-ref);tryLeaderDeathSave(a);
+    floatAt(a,'🌀 -'+ref,'crit');floatAt(t,'สะท้อน!','buff');
+    log(`${t.name} สะท้อนกลับ ${ref} ใส่ ${a.name}!`);
+  }
+  // reflectMark set (skill1): mark target so THEIR next attack reflects
+  if(s.reflectMark){t.status.reflectMark=Math.max(t.status.reflectMark||0,s.reflectMark);floatAt(t,'🌀 MARK','ult');log(`${a.name} ทำเครื่องหมายสะท้อน ${t.name}`)}
+  log(`${a.name} ใช้ ${s.uiName} ใส่ ${t.name} -${before-t.hp}`)
+}
+function follow(u,t,n){for(let i=0;i<n;i++){if(dist(u,t)<=1)break;let nn=neighbor(u.q,u.r,u.face);if(!inside(nn.q,nn.r)||unitAt(nn.q,nn.r))break;u.q=nn.q;u.r=nn.r}}function retreat(u,n){let back={E:'W',W:'E',NE:'SW',NW:'SE',SE:'NW',SW:'NE'}[u.face]||'SW';for(let i=0;i<n;i++){let nn=neighbor(u.q,u.r,back);if(!inside(nn.q,nn.r)||unitAt(nn.q,nn.r))break;u.q=nn.q;u.r=nn.r}}function knock(a,t,n){for(let i=0;i<n;i++){let nn=neighbor(t.q,t.r,a.face);if(!inside(nn.q,nn.r)||unitAt(nn.q,nn.r))break;t.q=nn.q;t.r=nn.r}}function heal(u,n){let old=u.hp;u.hp=Math.min(u.maxHp,u.hp+n);if(u.hp>old)floatAt(u,'+'+(u.hp-old),'heal')}function floatAt(u,text,cls){let p=pos(u.q,u.r),f=document.createElement('div');f.className='float '+cls;f.textContent=text;f.style.left=(p.x+38)+'px';f.style.top=(p.y+18)+'px';floatLayer.appendChild(f);setTimeout(()=>f.remove(),1300)}function shake(dmg,ult){let el=document.querySelector('.boardPanel');el.style.setProperty('--shake',Math.min(22,4+Math.round(dmg/4))+'px');el.style.setProperty('--shakeDur',ult?'260ms':'170ms');el.classList.remove('impactShake');void el.offsetWidth;el.classList.add('impactShake')}
+function startTurn(idv){
+  faceMode=false;
+  buildOrder();
+  let u=units.find(x=>x.id===idv&&x.hp>0)||units.find(x=>x.hp>0);
+  if(!u){checkWin();return}
+  turnId=u.id;
+  updateRelicLock();expireRelicBuffsForOwner(u.id);expireOldRelics();
+  if(u.turns>0)for(let k in u.cd)u.cd[k]=Math.max(0,u.cd[k]-1);
+  u.mp=maxMpOf(u);if(u.status.relicRegen)heal(u,Math.round(u.maxHp*u.status.relicRegen));u.turns++;u.status.pranaUsed=false;u.status.dodgeBonusUsed=false;
+  if(u.status.dodgeBuffTurns){u.status.dodgeBuffTurns--; if(u.status.dodgeBuffTurns<=0){u.status.dodgeBuff=0}}
+  ['rangePlus','dodgeBuff','penanceStacks','noBlink','hawkMark','strangeMark','atkDebuff'].forEach(x=>{});
+  if(u.status.rangePlusTurns){u.status.rangePlusTurns--;if(!u.status.rangePlusTurns)u.status.rangePlus=0}
+  if(u.status.dodgeBuffTurns){u.status.dodgeBuffTurns--;if(!u.status.dodgeBuffTurns)u.status.dodgeBuff=0}
+  if(u.status.counterBuffTurns){u.status.counterBuffTurns--;if(!u.status.counterBuffTurns)u.status.counterBuff=0}
+  if(u.status.movePlusTurns){u.status.movePlusTurns--;if(!u.status.movePlusTurns)u.status.movePlus=0}
+  if(u.status.damageReductionTurns){u.status.damageReductionTurns--;if(!u.status.damageReductionTurns)u.status.damageReduction=0}
+  if(u.status.damageAmpTurns){u.status.damageAmpTurns--;if(!u.status.damageAmpTurns)u.status.damageAmp=0}
+  if(u.status.penanceTurns){u.status.penanceTurns--;if(!u.status.penanceTurns)u.status.penanceStacks=0}
+  if(u.status.atkDebuffTurns){u.status.atkDebuffTurns--;if(!u.status.atkDebuffTurns)u.status.atkDebuff=0}
+  if(u.status.hawkMark)u.status.hawkMark--;
+  if(u.status.strangeMark)u.status.strangeMark--;
+  if(u.status.scarletHexTurns){u.status.scarletHexTurns--;if(!u.status.scarletHexTurns)u.status.scarletHex=0}
+  if(u.status.noBlink)u.status.noBlink--;
+  if(u.status.burn){let d=8*u.status.burn;u.hp=Math.max(0,u.hp-d);tryLeaderDeathSave(u);floatAt(u,'BURN -'+d,'dmg');u.status.burn--}
+  if(u.status.poison){let d=6*u.status.poison;u.hp=Math.max(0,u.hp-d);tryLeaderDeathSave(u);floatAt(u,'POISON -'+d,'dmg');u.status.poison--}
+  if(u.status.slow){u.mp=Math.max(1,u.mp-1);u.status.slow--;floatAt(u,'SLOW','buff')}
+  // === Battle Royale fire ring damage ===
+    // === hpRegen passive (zhangwuji / fangzheng) ===
+  if(roster[u.key]&&(u.key==='zhangwuji'||u.key==='fangzheng')){
+    let regen=u.key==='zhangwuji'?.04:(u.hp<u.maxHp*.5?.08:.05);
+    heal(u,Math.round(u.maxHp*regen));
+  }
+  // zhangwuji leader aura: team hpRegen 3%
+  let wujiLeader=units.find(x=>x.side===u.side&&x.isLeader&&x.hp>0&&x.key==='zhangwuji');
+  if(wujiLeader&&u.id!==wujiLeader.id)heal(u,Math.round(u.maxHp*.03));
+  // critGauge: lenghu gains +10% crit per turn (max 60%)
+  if(u.key==='lenghu'){u.status.critGauge=Math.min(.60,(u.status.critGauge||0)+.10);floatAt(u,'CRIT GAUGE '+Math.round(u.status.critGauge*100)+'%','buff')}
+  // rageHealUsed reset each turn
+  if(u.status.rageHealUsed)u.status.rageHealUsed=false;
+  if(fireCells.has(id(u.q,u.r))){let fd=Math.round(u.maxHp*.12);u.hp=Math.max(0,u.hp-fd);tryLeaderDeathSave(u);floatAt(u,'🔥 FIRE -'+fd,'ult');log(`${u.name} ถูกไฟเผา -${fd} (12% MaxHP) • ย้ายออกจากวงไฟ!`)}
+  if(u.status.stun){u.status.stun--;u.mp=0;floatAt(u,'STUNNED - SKIP','crit');log(`${u.name} ติด Stun จึงข้ามเทิร์นนี้`);render();checkWin();if(!gameOver)setTimeout(()=>endTurn(),520);return}
+  // ถ้าเริ่มเทิร์นแล้วตายจากสถานะ เช่น Burn/Poison ให้ส่งต่อไปตัวถัดไปทันที ไม่ให้ค้างหรือข้ามลำดับผิด
+  if(u.hp<=0){render();checkWin();if(!gameOver)setTimeout(()=>endTurn(),220);return}
+  render();checkWin();
+  if(!gameOver&&u.side==='enemy'){botBusy=true;setTimeout(botTurn,420)}
+}
+function nextAliveAfter(curId){
+  // ใช้ order เดิมก่อนคำนวณใหม่ เพื่อไม่ให้ตัวที่ AGI ต่ำ เช่น Ghost Rider ถูกข้าม เมื่อมีตัวตายในระหว่างเทิร์น
+  let old=order.slice();
+  if(!old.length){buildOrder();old=order.slice()}
+  let start=old.indexOf(curId);
+  if(start<0)start=0;
+  for(let step=1;step<=old.length;step++){
+    let idx=(start+step)%old.length;
+    let cand=units.find(x=>x.id===old[idx]&&x.hp>0);
+    if(cand){return {id:cand.id,wrapped:idx<=start}}
+  }
+  buildOrder();
+  let cand=units.find(x=>x.hp>0);
+  return cand?{id:cand.id,wrapped:true}:null;
+}
+function endTurn(){
+  if(gameOver)return;
+  botBusy=false;
+  processRelicCapture();
+  dropRelicFromDead();
+  checkWin();
+  if(gameOver)return;
+  let cur=turnId;
+  let nxt=nextAliveAfter(cur);
+  if(!nxt){checkWin();return}
+  if(nxt.wrapped){
+    if(turnNo>=2&&turnNo%2===0)spawnRelic();
+    turnNo++;
+    updateRelicLock();
+    expireOldRelics();
+    // === Battle Royale fire ring triggers (at start of rounds 4, 7, 10) ===
+    if(turnNo===4)activateFireRing(5);
+    else if(turnNo===7)activateFireRing(4);
+    else if(turnNo===10)activateFireRing(3);
+    else updateFireWarn(); // update warning ring each round
+    // Update banner fire status
+    let nextFire=fireLevel<3?[4,7,10][fireLevel]-turnNo:-1;
+    let bannerFire=fireLevel>=3?'🔥🔥🔥 FINAL ZONE':nextFire<=1?'⚠️ FIRE IN NEXT ROUND!':fireLevel>0?`🔥 Fire Ring ${fireLevel}/3 Active`:`🔥 Fire in ${[4,7,10][0]-turnNo} rounds`;
+    $('banner').textContent=`Hex Arena v5.8 • Battle Royale • ${bannerFire}`;
+  }
+  startTurn(nxt.id);
+}
+function autoEnd(u){if(u.mp<=0)setTimeout(()=>{let a=active();if(a&&a.id===u.id)endTurn()},300)}function checkWin(){let allyLeader=units.find(u=>u.side==='ally'&&u.isLeader),enemyLeader=units.find(u=>u.side==='enemy'&&u.isLeader);let allyAlive=units.some(u=>u.side==='ally'&&u.hp>0),enemyAlive=units.some(u=>u.side==='enemy'&&u.hp>0);let allyHeroAlive=units.some(u=>u.side==='ally'&&!u.isLeader&&u.hp>0),enemyHeroAlive=units.some(u=>u.side==='enemy'&&!u.isLeader&&u.hp>0);let msg='';if(allyLeader&&allyLeader.hp<=0){gameOver=true;resultTitle.textContent='🏁 BOT ชนะ';msg='หัวหน้าฝั่งผู้เล่นตาย = แพ้ทันที'}else if(enemyLeader&&enemyLeader.hp<=0){gameOver=true;resultTitle.textContent='🏁 ผู้เล่นชนะ';msg='หัวหน้าฝั่ง BOT ตาย = ชนะทันที'}else if(!allyAlive||!enemyAlive||!allyHeroAlive||!enemyHeroAlive){gameOver=true;resultTitle.textContent=(allyAlive&&allyHeroAlive)?'🏁 ผู้เล่นชนะ':'🏁 BOT ชนะ';msg='ทีมหนึ่งเหลือหัวหน้าคนเดียวหรือไม่มีตัวรอด'}if(gameOver){resultMsg.textContent=msg||'จบเกม';resultOverlay.style.display='flex'}}function botMoveToward(u,target){
+  let occupied=new Set(units.filter(x=>x.hp>0&&x.id!==u.id&&x.id!==target.id).map(x=>id(x.q,x.r)));
+  let start=id(u.q,u.r),goal=id(target.q,target.r),prev={},first={},q=[{q:u.q,r:u.r}],seen=new Set([start]);
+  while(q.length){
+    let cur=q.shift();
+    if(cur.q===target.q&&cur.r===target.r)break;
+    for(let d of DIR_ORDER){
+      let n=neighbor(cur.q,cur.r,d),nid=id(n.q,n.r);
+      if(n.q<0||n.q>=W||n.r<0||n.r>=H||!isWalkable(n.q,n.r)||occupied.has(nid)||seen.has(nid))continue;
+      seen.add(nid);prev[nid]=id(cur.q,cur.r);first[nid]=first[id(cur.q,cur.r)]||d;q.push(n);
+    }
+  }
+  let best=null,bd=99;
+  for(let sid of seen){let [qq,rr]=sid.split(',').map(Number);let d=dist({q:qq,r:rr},target);if(d<bd&&sid!==start){bd=d;best=sid}}
+  if(best){moveOrFace(u,first[best]);return true}
+  let dir=faceTo(u,target);turnFace(u,dir);return true;
+}
+
+let SMART_BOT_ROLLOUTS=500;
+
+const AI_PRESETS={Easy:100,Normal:500,Hard:1500,Insane:4000};let AI_DIFFICULTY='Normal';
+function setAIDifficulty(name){AI_DIFFICULTY=name;let input=$('aiSimsInput'),label=$('aiPresetLabel');if(input)input.value=AI_PRESETS[name]||500;if(label)label.textContent=`${name} = ${input?input.value:AI_PRESETS[name]} sims`;document.querySelectorAll('.aiDiffBtn').forEach(b=>b.classList.toggle('active',b.dataset.ai===name));applyAIConfig(false)}
+function applyAIConfig(showLog=true){let input=$('aiSimsInput');let v=input?parseInt(input.value,10):500;if(!Number.isFinite(v))v=500;v=Math.max(10,Math.min(10000,v));SMART_BOT_ROLLOUTS=v;if(input)input.value=v;let label=$('aiPresetLabel');if(label)label.textContent=`${AI_DIFFICULTY} = ${v} sims`;if(showLog)log(`BOT AI v4.3: ${AI_DIFFICULTY} / ${v} MCTS`)}
+function initAIConfig(){document.querySelectorAll('.aiDiffBtn').forEach(b=>b.onclick=()=>setAIDifficulty(b.dataset.ai));let input=$('aiSimsInput');if(input){input.oninput=()=>{AI_DIFFICULTY='Custom';document.querySelectorAll('.aiDiffBtn').forEach(b=>b.classList.remove('active'));applyAIConfig(false)}}setAIDifficulty('Normal')}
+const SMART_BOT_LOOKAHEAD=2;
+const SMART_BOT_DELAY=760;
+function simCloneUnits(){return JSON.parse(JSON.stringify(units))}
+function simUnitAt(state,q,r,ignoreId){return state.find(u=>u.hp>0&&u.id!==ignoreId&&u.q===q&&u.r===r)}
+function simInside(q,r){return isWalkable(q,r)}
+function simEnemiesOf(state,u){return state.filter(x=>x.side!==u.side&&x.hp>0)}
+function simAlliesOf(state,u){return state.filter(x=>x.side===u.side&&x.hp>0)}
+function simEffRange(u,s){return rangeOf(s)+(u.status&&u.status.rangePlus?u.status.rangePlus:0)}
+function simFrontCells(u,range){let out=[],q=u.q,r=u.r;for(let i=1;i<=range;i++){let n=neighbor(q,r,u.face);q=n.q;r=n.r;if(!isSkillPassable(q,r))break;out.push({q,r})}return out}
+function simFanCells(u,range){let i=DIR_ORDER.indexOf(u.face),dirs=[u.face,DIR_ORDER[(i+5)%6],DIR_ORDER[(i+1)%6]],out=[];for(let dir of dirs){let q=u.q,r=u.r;for(let n=1;n<=range;n++){let p=neighbor(q,r,dir);q=p.q;r=p.r;if(!isSkillPassable(q,r))break;out.push({q,r})}}return out}
+function simBestLeap(state,u,range){let line=simFrontCells(u,range).filter(c=>simInside(c.q,c.r)&&!simUnitAt(state,c.q,c.r,u.id));return line[line.length-1]||null}
+
+function simHasRonanGuardAura(state,t){return false}
+function simTargets(state,u,k){let s=roster[u.key].skill[k],en=simEnemiesOf(state,u);if(s.type==='buff')return[u];if(s.type==='swap'||s.type==='mark')return en.filter(e=>dist(u,e)<=simEffRange(u,s));if(s.type==='randomRadius')return en.filter(e=>dist(u,e)<=s.radius);if(s.type==='fan'){let cells=simFanCells(u,s.range||1);return en.filter(e=>cells.some(c=>c.q===e.q&&c.r===e.r))}if(s.type==='aoe'){let line=simFrontCells(u,simEffRange(u,s));return en.filter(e=>line.some(c=>dist(c,e)<= (s.radius||0)))}if(s.type==='dashLine'){let line=simFrontCells(u,simEffRange(u,s));return en.filter(e=>line.some(c=>c.q===e.q&&c.r===e.r))}if(s.type==='leapAoE'){let land=simBestLeap(state,u,s.range||2);return land?en.filter(e=>dist(land,e)<=s.radius):[]}let line=simFrontCells(u,simEffRange(u,s));let arr=[];for(let c of line){let t=en.find(e=>e.q===c.q&&e.r===c.r);if(t){arr.push(t);if(!s.pierce)break}}return arr}
+function simCanUse(state,u,k){let s=roster[u.key].skill[k];if(!u||u.hp<=0||u.mp<costOf(k,s)||Math.max(0,u.cd[k]||0)>0)return false;if(s.type==='buff')return true;if(s.type==='leapAoE')return !!simBestLeap(state,u,s.range||2);return simTargets(state,u,k).length>0}
+function simHasVisionScarletSynergy(state,u){return false}
+function simDamage(a,t,s,k,state=[]){let atk=Math.max(1,a.atk-(a.status&&a.status.atkDebuff?Math.round(a.atk*a.status.atkDebuff):0));let base=Math.round(atk*(s.factor||1)),bonus=1;if(roster[a.key].distanceBonus){let d=dist(a,t);bonus=d<=1?.8:d>=4?1.05:1}if(a.key==='ronan'&&k==='attack'&&a.status.judgmentStacks)bonus*=1+.18*a.status.judgmentStacks;if(a.key==='shangchi'&&(a.status.flowStacks||0)>0&&k!=='attack')bonus*=1+0.10*Math.min(5,a.status.flowStacks||0);if(t.status&&t.status.hawkMark&&a.key==='hawkeye')bonus*=1.25;let hits=s.hits||1;if(k==='ult'&&simHasVisionScarletSynergy(state,a))bonus*=1.5;if(a.key==='shangchi'&&k==='ult'&&s.comboUlt){return Math.max(1,Math.round(atk*bonus*(.8+.8+1.0)))}return Math.max(1,Math.round(base*bonus*hits))}
+function simApplyDamage(state,a,t,dmg){if(simHasRonanGuardAura(state,t))dmg=Math.ceil(dmg*.80);if(t.status&&t.status.damageAmp)dmg=Math.ceil(dmg*(1+t.status.damageAmp));if(t.status&&t.status.guard){dmg=Math.ceil(dmg/2);t.status.guard=false}if(t.status&&t.status.shield){let ab=Math.min(t.status.shield,dmg);t.status.shield-=ab;dmg-=ab}t.hp=Math.max(0,t.hp-dmg);return dmg}
+function simApplyAction(state,actorId,action){let u=state.find(x=>x.id===actorId&&x.hp>0);if(!u)return state;if(action.type==='face'){u.face=action.dir;u.mp=Math.max(0,u.mp-1);return state}if(action.type==='move'){let n=neighbor(u.q,u.r,action.dir);u.face=action.dir;if(simInside(n.q,n.r)&&!simUnitAt(state,n.q,n.r,u.id)){u.q=n.q;u.r=n.r;if(u.key==='shangchi')u.status.martialFlow=true}u.mp=Math.max(0,u.mp-1);return state}if(action.type==='defend'){u.status.guard=true;u.mp=Math.max(0,u.mp-1);return state}if(action.type==='prana'){u.mp=Math.max(0,u.mp-1);for(let k in u.cd)u.cd[k]=Math.max(0,(u.cd[k]||0)-1);return state}if(action.type==='skill'){let k=action.k,s=roster[u.key].skill[k];if(!simCanUse(state,u,k))return state;u.mp=Math.max(0,u.mp-costOf(k,s));if(s.cooldown)u.cd[k]=s.cooldown;if(s.type==='buff'){if(s.shield)u.status.shield=Math.max(u.status.shield||0,Math.round(u.maxHp*s.shield));if(s.rangePlus){u.status.rangePlus=s.rangePlus;u.status.rangePlusTurns=2}if(s.dodgeBuff){u.status.dodgeBuff=s.dodgeBuff;u.status.dodgeBuffTurns=s.dodgeBuffTurns||2}if(s.counterBuff){u.status.counterBuff=s.counterBuff;u.status.counterBuffTurns=s.counterBuffTurns||2}if(s.movePlus){u.status.movePlus=s.movePlus;u.status.movePlusTurns=s.movePlusTurns||2}if(s.markNext)u.status.markNext=true;if(s.penance){u.status.penanceStacks=Math.min(3,(u.status.penanceStacks||0)+1);u.status.penanceTurns=3}return state}
+  let ts=simTargets(state,u,k);if(s.type==='leapAoE'){let land=simBestLeap(state,u,s.range||2);if(land){u.q=land.q;u.r=land.r}ts=simTargets(state,u,k)}
+  for(let t of ts){let dmg=s.type==='mark'?Math.round(u.atk*.2):s.type==='swap'?Math.round(u.atk*.2):simDamage(u,t,s,k,state);simApplyDamage(state,u,t,dmg);if(s.damageAmp){t.status.damageAmp=s.damageAmp;t.status.damageAmpTurns=2}if(s.mpReduce)t.mp=Math.max(0,t.mp-s.mpReduce);if(s.slow)t.status.slow=Math.max(t.status.slow||0,s.slow);if(s.mark||u.status.markNext){t.status.hawkMark=Math.max(t.status.hawkMark||0,s.mark||2);u.status.markNext=false}if(s.burn)t.status.burn=Math.max(t.status.burn||0,s.burn);if(s.stun)t.status.stun=Math.max(t.status.stun||0,s.stun)}
+  if(u.key==='shangchi'&&u.status.martialFlow&&k!=='attack')u.status.martialFlow=false;if(u.key==='ronan'&&k==='attack')u.status.judgmentStacks=0;if(s.retreatAfter||s.selfRetreat){let back={E:'W',W:'E',NE:'SW',NW:'SE',SE:'NW',SW:'NE'}[u.face]||'SW';let n=neighbor(u.q,u.r,back);if(simInside(n.q,n.r)&&!simUnitAt(state,n.q,n.r,u.id)){u.q=n.q;u.r=n.r}}
+  return state}
+return state}
+function simMaxRangeByUnit(u){let m=1;for(let k in roster[u.key].skill){let sk=roster[u.key].skill[k];m=Math.max(m,simEffRange(u,sk)||1)}return m}
+function simIsCarry(u){return u.maxHp<=160||u.atk>=10}
+function simIsTank(u){return u.maxHp>=190}
+function simThreatPower(u){return u.atk*8+u.agi*1.6+simMaxRangeByUnit(u)*18+(simIsCarry(u)?120:0)+(u.hp/u.maxHp)*90}
+function simNearestFriend(state,u){let friends=state.filter(x=>x.side===u.side&&x.hp>0&&x.id!==u.id);if(!friends.length)return 99;return Math.min(...friends.map(f=>dist(u,f)))}
+function simNearCount(list,u,r){return list.filter(x=>x.hp>0&&dist(x,u)<=r).length}
+function simPotentialDamage(list,target){return list.filter(a=>a.hp>0).reduce((sum,a)=>{let max=0;for(let k in roster[a.key].skill){let sk=roster[a.key].skill[k];if((a.cd&&a.cd[k]||0)<=0&&a.mp>=costOf(k,sk)&&dist(a,target)<=simEffRange(a,sk)+1){max=Math.max(max,simDamage(a,target,sk,k))}}return sum+max},0)}
+function simEvalState(state,side){let allies=state.filter(u=>u.side===side),enemies=state.filter(u=>u.side!==side);let score=0;for(let a of allies){score+=a.hp>0?450: -1200;score+=a.hp/a.maxHp*520;score+=a.mp*18;score+=Object.values(a.cd||{}).filter(x=>x===0).length*12;if(a.status&&a.status.guard)score+=80;if(a.status&&a.status.shield)score+=Math.min(120,a.status.shield);if(a.key==='shangchi'){score+=120;score+=(a.status.flowStacks||0)*45;if(a.status.dodgeBuff)score+=110;if(a.status.counterBuff)score+=100}}for(let e of enemies){score+=e.hp<=0?1250:0;score+=(1-e.hp/e.maxHp)*610;if(e.hp>0&&e.hp<35)score+=180;score-=e.mp*10}let liveA=allies.filter(x=>x.hp>0),liveE=enemies.filter(x=>x.hp>0);for(let a of liveA){if(liveA.some(r=>r.key==='ronan'&&r.id!==a.id&&dist(r,a)<=1))score+=120}if(liveA.length&&!liveE.length)score+=5000;if(!liveA.length)score-=5000;for(let a of liveA){let nearest=liveE.length?Math.min(...liveE.map(e=>dist(a,e))):0;score-=nearest*8}return score}
+function simSkillValue(state,u,k){let s=roster[u.key].skill[k];if(!simCanUse(state,u,k))return -99999;let ts=simTargets(state,u,k);if(s.type==='buff'){let val=80;if(s.shield)val+=u.maxHp*s.shield*1.3;if(s.rangePlus)val+=110;if(s.dodgeBuff)val+=90;if(s.markNext)val+=75;if(s.penance)val+=90;if(u.hp/u.maxHp<.35)val+=120;return val}
+let val=0;if(k==='ult')val+=170;if(ts.length>1)val+=ts.length*95;for(let t of ts){let dmg=s.type==='mark'?u.atk*.2:s.type==='swap'?u.atk*.2:simDamage(u,t,s,k);val+=dmg*9;if(t.hp<=dmg)val+=1100;if(t.hp/t.maxHp<.35)val+=160;if(s.mpReduce)val+=90*s.mpReduce;if(s.slow)val+=80;if(s.burn)val+=60;if(s.mark)val+=85}val-=costOf(k,s)*22;return val}
+function simBuildActions(state,u,depth=0){let actions=[];if(!u||u.hp<=0||u.mp<=0)return actions;for(let k of Object.keys(roster[u.key].skill)){let s=roster[u.key].skill[k];if(simCanUse(state,u,k)){actions.push({type:'skill',k,label:roster[u.key].skill[k].uiName,base:simSkillValue(state,u,k)})}}
+for(let d of DIR_ORDER){let n=neighbor(u.q,u.r,d);if(simInside(n.q,n.r)&&!simUnitAt(state,n.q,n.r,u.id)){actions.push({type:'move',dir:d,label:'เดิน '+DIR_TEXT[d],base:70-Math.min(...simEnemiesOf(state,u).map(e=>dist(n,e)).concat([4]))*8})}else if(u.face!==d){let old=u.face;u.face=d;let best=Object.keys(roster[u.key].skill).reduce((m,k)=>Math.max(m,simSkillValue(state,u,k)),-999);u.face=old;if(best>-500)actions.push({type:'face',dir:d,label:'หัน '+DIR_TEXT[d],base:Math.max(45,best*.25)})}}
+if(u.mp>=1&&!u.status.guard)actions.push({type:'defend',label:'ตั้งรับ',base:u.hp/u.maxHp<.35?260:75});if(u.mp>=1&&!u.status.pranaUsed&&Object.values(u.cd||{}).some(v=>v>0))actions.push({type:'prana',label:'ฝึกปราณ',base:120+Object.values(u.cd||{}).filter(v=>v>0).length*18});return actions}
+function simBestResponseScore(state,side,depth){let actors=state.filter(u=>u.side===side&&u.hp>0&&u.mp>0).sort((a,b)=>b.agi-a.agi);if(!actors.length||depth<=0)return simEvalState(state,side);let u=actors[0];let actions=simBuildActions(state,u,depth);if(!actions.length)return simEvalState(state,side);let best=-999999;for(let a of actions.slice(0,16)){let st=JSON.parse(JSON.stringify(state));simApplyAction(st,u.id,a);let sc=simEvalState(st,side);if(depth>1){let opp=side==='enemy'?'ally':'enemy';sc-=0.45*simBestResponseScore(st,opp,depth-1)}if(sc>best)best=sc}return best}
+function simWinnerSide(state){
+  let allyLeader=state.find(u=>u.side==='ally'&&u.isLeader), enemyLeader=state.find(u=>u.side==='enemy'&&u.isLeader);
+  if(allyLeader&&allyLeader.hp<=0)return 'enemy';
+  if(enemyLeader&&enemyLeader.hp<=0)return 'ally';
+  let ally=state.some(u=>u.side==='ally'&&u.hp>0), enemy=state.some(u=>u.side==='enemy'&&u.hp>0);
+  let allyHero=state.some(u=>u.side==='ally'&&!u.isLeader&&u.hp>0), enemyHero=state.some(u=>u.side==='enemy'&&!u.isLeader&&u.hp>0);
+  if(ally&&!enemy)return 'ally';
+  if(enemy&&!ally)return 'enemy';
+  if(ally&&!allyHero)return 'enemy';
+  if(enemy&&!enemyHero)return 'ally';
+  return null;
+}
+function simNextActorId(state,curId){
+  let alive=state.filter(u=>u.hp>0).sort((a,b)=>b.agi-a.agi);
+  if(!alive.length)return null;
+  let i=alive.findIndex(u=>u.id===curId);
+  if(i<0)i=0;
+  return alive[(i+1)%alive.length].id;
+}
+function simBeginTurn(state,u){
+  if(!u||u.hp<=0)return;
+  u.mp=MOVE_POINTS;
+  u.status.pranaUsed=false;
+  for(let k in u.cd)u.cd[k]=Math.max(0,(u.cd[k]||0)-1);
+  if(u.status.burn){u.hp=Math.max(0,u.hp-(8*u.status.burn));u.status.burn=Math.max(0,u.status.burn-1)}
+  if(u.status.poison){u.hp=Math.max(0,u.hp-(6*u.status.poison));u.status.poison=Math.max(0,u.status.poison-1)}
+  if(u.status.slow){u.mp=Math.max(1,u.mp-1);u.status.slow=Math.max(0,u.status.slow-1)}
+}
+function simRolloutPolicyAction(state,u){
+  let actions=simBuildActions(state,u,1);
+  if(!actions.length)return null;
+  // ใช้ policy เบา ๆ เพื่อเล่นต่อจนจบ แต่คะแนนตัดสิน action หลักยังเป็นผลแพ้/ชนะเท่านั้น
+  actions=actions.sort((a,b)=>b.base-a.base).slice(0,Math.min(5,actions.length));
+  let r=Math.random();
+  if(r<.62)return actions[0];
+  if(r<.82)return actions[Math.min(1,actions.length-1)];
+  if(r<.94)return actions[Math.min(2,actions.length-1)];
+  return actions[Math.floor(Math.random()*actions.length)];
+}
+function simRolloutTerminalResult(rootSide,actorId,firstAction){
+  let st=simCloneUnits();
+  let actor=st.find(x=>x.id===actorId&&x.hp>0);
+  if(!actor)return -1;
+  simApplyAction(st,actorId,firstAction);
+  let winner=simWinnerSide(st);
+  if(winner)return winner===rootSide?1:-1;
+  let curId=(actor.mp>0&&actor.hp>0)?actor.id:simNextActorId(st,actor.id);
+  let maxPlies=90;
+  let started=new Set();
+  for(let ply=0;ply<maxPlies;ply++){
+    winner=simWinnerSide(st);
+    if(winner)return winner===rootSide?1:-1;
+    let u=st.find(x=>x.id===curId&&x.hp>0);
+    if(!u){curId=simNextActorId(st,curId);continue}
+    if(!started.has(curId)||u.mp<=0){
+      simBeginTurn(st,u);
+      started.add(curId+'@'+ply);
+      if(u.hp<=0){curId=simNextActorId(st,u.id);continue}
+    }
+    let a=simRolloutPolicyAction(st,u);
+    if(!a||u.mp<=0){curId=simNextActorId(st,u.id);continue}
+    simApplyAction(st,u.id,a);
+    if(u.mp<=0)curId=simNextActorId(st,u.id);
+  }
+  // ถ้าจำลองครบแล้วยังไม่จบ ถือว่าเสมอ ไม่ให้แต้มกลางทาง
+  return 0;
+}
+function miniPolicyScore(state,u,a){
+  // v4.1 Mini Policy: prior ไม่ให้ AI เดินมั่ว ให้คิดปกป้อง carry / รุมตัวบาง / กัน kite
+  let sc=(a.base||0);
+  let enemies=simEnemiesOf(state,u), allies=state.filter(x=>x.side===u.side&&x.hp>0&&x.id!==u.id);
+  let enemyCarries=enemies.filter(simIsCarry).sort((x,y)=>x.hp/x.maxHp-y.hp/y.maxHp);
+  let allyCarry=state.filter(x=>x.side===u.side&&x.hp>0&&simIsCarry(x)).sort((x,y)=>x.hp/x.maxHp-y.hp/y.maxHp)[0];
+
+  if(a.type==='skill'){
+    let s=roster[u.key].skill[a.k],ts=simTargets(state,u,a.k);
+    if(a.k==='ult')sc+=220;
+    if(ts.length>1)sc+=160*ts.length;
+    for(let t of ts){
+      let dmg=s.type==='mark'||s.type==='swap'?Math.round(u.atk*.2):simDamage(u,t,s,a.k);
+      if(simIsCarry(t))sc+=420;                    // ยิง carry ก่อน
+      if(t.hp<=dmg)sc+=2200;                       // kill secure
+      if(t.hp/t.maxHp<.35)sc+=520;
+      if(s.knock||s.toss||s.selfRetreat){
+        sc+=160;
+        let friendDist=simNearestFriend(state,t);
+        if(friendDist<=2&&simIsCarry(t))sc+=420;   // ผลัก carry ออกจาก tank/support
+      }
+      if(s.mpReduce)sc+=120*s.mpReduce;
+      if(s.slow)sc+=120;
+    }
+  }
+
+  if(a.type==='move'){
+    let n=neighbor(u.q,u.r,a.dir),en=enemies;
+    let nearest=en.length?Math.min(...en.map(e=>dist(n,e))):0;
+    sc+=120-nearest*20;
+    // tank เดินไปอยู่ใกล้ carry ฝั่งเรา
+    if(simIsTank(u)&&allyCarry){let before=dist(u,allyCarry),after=dist(n,allyCarry);if(after<before)sc+=420;if(after<=2)sc+=240}
+    // carry หนีจาก melee threat และรักษาระยะยิง
+    if(simIsCarry(u)){
+      let beforeThreat=en.filter(e=>simMaxRangeByUnit(e)<=2&&dist(e,u)<=2).length;
+      let afterThreat=en.filter(e=>simMaxRangeByUnit(e)<=2&&dist(e,n)<=2).length;
+      if(afterThreat<beforeThreat)sc+=520;
+      if(afterThreat>beforeThreat)sc-=760;
+      let target=enemyCarries[0]||en.sort((x,y)=>x.hp-y.hp)[0];
+      if(target){let d=dist(n,target);if(d>=2&&d<=simMaxRangeByUnit(u))sc+=260}
+    }
+    // เดินไปปิดทาง/รุม carry ศัตรู
+    let ec=enemyCarries[0];
+    if(ec){let before=dist(u,ec),after=dist(n,ec);if(after<before)sc+=220;if(after<=2)sc+=360}
+    // Battle Royale: หนีออกจากไฟ / อย่าเดินเข้าไฟ
+    if(fireCells.has(id(n.q,n.r)))sc-=1200;
+    if(fireCells.has(id(u.q,u.r))&&!fireCells.has(id(n.q,n.r)))sc+=800; // หนีออกจากไฟ!
+    if(fireWarnCells.has(id(n.q,n.r)))sc-=400; // อย่าเดินเข้าไปในพื้นที่เตือน
+    if(fireLevel>0){let safeRadius=5-fireLevel;if(dist(n,FIRE_CENTER)<dist(u,FIRE_CENTER)&&dist(u,FIRE_CENTER)>safeRadius)sc+=350} // move toward center when fire is active
+  }
+
+  if(a.type==='face'){
+    let old=u.face;u.face=a.dir;
+    let bestTargetScore=0;
+    for(let k in roster[u.key].skill){if(simCanUse(state,u,k)){for(let t of simTargets(state,u,k)){bestTargetScore=Math.max(bestTargetScore,(simIsCarry(t)?420:0)+(t.hp/t.maxHp<.35?500:0))}}}
+    u.face=old;sc+=bestTargetScore;
+  }
+
+  if(a.type==='defend'){
+    if(u.hp/u.maxHp<.40)sc+=520;
+    if(simIsCarry(u)&&enemies.filter(e=>dist(e,u)<=2).length>=1)sc+=520;
+  }
+  if(a.type==='prana'&&Object.values(u.cd||{}).some(v=>v>2))sc+=150;
+  return Math.max(1,sc+20);
+}
+function miniStrategicValue(state,side){
+  // v4.1 Mini Value Network: anti-kite, protect carry, focus fire, isolate, 2v1
+  let base=simEvalState(state,side);
+  let allies=state.filter(x=>x.side===side&&x.hp>0), enemies=state.filter(x=>x.side!==side&&x.hp>0);
+  if(enemies.length===0)return 1;
+  if(allies.length===0)return -1;
+
+  base += (allies.length-enemies.length)*1150;
+
+  // 1) Focus fire: ถ้าหลายตัวของเรายิง/เข้าถึงศัตรูตัวเดียวกัน ให้คะแนนสูง โดยเฉพาะตัวบาง/carry
+  for(let e of enemies){
+    let focusers=allies.filter(a=>dist(a,e)<=Math.max(2,simMaxRangeByUnit(a))).length;
+    if(focusers>=2)base+=720+(simIsCarry(e)?420:0);
+    if(e.hp/e.maxHp<.35)base+=520;
+    if(e.hp<=simPotentialDamage(allies,e))base+=900; // มีโอกาสปิดงานในเทิร์นถัดไป
+    let friendDist=simNearestFriend(state,e);
+    if(friendDist>=3)base+=520+(simIsCarry(e)?520:0); // enemy carry ถูกแยกจากทีม
+    let nearAllies=simNearCount(allies,e,2);
+    if(nearAllies>=2)base+=460+(simIsCarry(e)?320:0); // รุม 2v1
+  }
+
+  // 2) Protect Carry: ตัวดาเมจของเราโดนเข้าประชิด/โดนรุม ให้ลบหนัก ถ้ามี tank อยู่ใกล้ค่อยลดโทษ
+  for(let a of allies){
+    let nearEnemies=simNearCount(enemies,a,2);
+    let focusThreat=simPotentialDamage(enemies,a);
+    if(simIsCarry(a)){
+      if(nearEnemies>=2)base-=1150;
+      if(simNearestFriend(state,a)>=3)base-=760; // carry หลุดเดี่ยว
+      if(a.hp/a.maxHp<.35)base-=720;
+      if(focusThreat>=a.hp)base-=1200; // จะตายเทิร์นหน้า
+      let protectors=allies.filter(x=>x.id!==a.id&&simIsTank(x)&&dist(x,a)<=2).length;
+      if(protectors>0)base+=520*protectors;
+      // anti-kite: carry ควรมีระยะห่างจาก bruiser/tank ศัตรู ไม่ใช่ถูกล็อกประชิด
+      let meleeThreat=enemies.filter(e=>simMaxRangeByUnit(e)<=2&&dist(e,a)<=2).length;
+      if(meleeThreat)base-=480*meleeThreat;
+    }else if(simIsTank(a)){
+      let allyCarry=allies.find(x=>x.id!==a.id&&simIsCarry(x));
+      if(allyCarry){
+        let d=dist(a,allyCarry);
+        if(d<=2)base+=360; else base-=180*d; // tank ต้องอยู่บัง carry
+      }
+    }
+  }
+
+  // 3) Team shape: ทีมเราไม่ควรกระจัดกระจาย แต่ถ้าศัตรูกระจัดกระจายให้บวก
+  if(allies.length>=2){let d=dist(allies[0],allies[1]); if(d<=2)base+=260; else base-=220*(d-2)}
+  if(enemies.length>=2){let d=dist(enemies[0],enemies[1]); if(d>=3)base+=300*(d-2)}
+
+  // 4) Battle Royale fire zone: หนีวงไฟ ดึงดูดฝ่ายตรงข้ามให้ติดไฟ
+  if(fireCells.size>0){
+    for(let a of allies){let fd=dist(a,FIRE_CENTER);if(fireCells.has(id(a.q,a.r)))base-=1400;else if(fd<=fireLevel?5-fireLevel+2:999)base+=fd<3?180:0}
+    for(let e of enemies){if(fireCells.has(id(e.q,e.r)))base+=900}
+    // ยิ่งอยู่ใกล้กลาง ยิ่งดี เมื่อวงไฟหดเข้า
+    for(let a of allies){let fd=dist(a,FIRE_CENTER);let safeRadius=5-fireLevel;if(fd>=safeRadius)base-=600*(fd-safeRadius+1)}
+  }
+
+  return Math.max(-1,Math.min(1,Math.tanh(base/4200)));
+}
+function miniValueAfterAction(rootState,u,a){
+  let st=JSON.parse(JSON.stringify(rootState));
+  let actor=st.find(x=>x.id===u.id&&x.hp>0);
+  if(!actor)return -1;
+  simApplyAction(st,actor.id,a);
+  let w=simWinnerSide(st);
+  if(w)return w===u.side?1:-1;
+  // depth-limited best response: ให้คิดฝ่ายตรงข้ามโต้ 2 ชั้นแบบเบา แล้วจบด้วย value network
+  let opp=u.side==='enemy'?'ally':'enemy';
+  let strategic=miniStrategicValue(st,u.side);
+  let response=Math.tanh(simBestResponseScore(st,opp,2)/5000);
+  return Math.max(-1,Math.min(1,0.72*strategic - 0.28*response));
+}
+function chooseSmartBotAction(u){
+  let rootState=simCloneUnits();
+  let actions=simBuildActions(rootState,u,1);
+  if(!actions.length)return null;
+  actions=actions.sort((a,b)=>miniPolicyScore(rootState,u,b)-miniPolicyScore(rootState,u,a)).slice(0,Math.min(14,actions.length));
+  let sumPrior=actions.reduce((m,a)=>m+miniPolicyScore(rootState,u,a),0)||1;
+  for(let a of actions){
+    a.prior=miniPolicyScore(rootState,u,a)/sumPrior;
+    a.visits=0;a.total=0;a.q=0;
+  }
+  let loops=Math.max(20,SMART_BOT_ROLLOUTS),cPuct=1.65;
+  for(let i=0;i<loops;i++){
+    let totalN=actions.reduce((m,a)=>m+a.visits,0);
+    let selected=null,bestU=-999999;
+    for(let a of actions){
+      let ucb=a.q + cPuct*a.prior*Math.sqrt(totalN+1)/(1+a.visits);
+      if(ucb>bestU){bestU=ucb;selected=a}
+    }
+    let v=miniValueAfterAction(rootState,u,selected); // value network [-1,+1]
+    selected.visits++;
+    selected.total+=v;
+    selected.q=selected.total/selected.visits;
+  }
+  let best=actions.sort((a,b)=>b.visits-a.visits || b.q-a.q)[0];
+  if(best){
+    best.label=best.label+` • MCTS ${Math.round(best.q*100)} • V ${best.visits}`;
+    best.score=best.q.toFixed(3);
+  }
+  return best;
+}
+function executeSmartBotAction(u,a){if(!a){botBusy=false;return endTurn()}if(a.type==='skill'){log(`AI เลือก ${u.name}: ${a.label}`);return useSkill(u,a.k)}if(a.type==='move'){log(`AI เลือก ${u.name}: ${a.label}`);return moveOrFace(u,a.dir)}if(a.type==='face'){log(`AI เลือก ${u.name}: ${a.label}`);return turnFace(u,a.dir)}if(a.type==='defend'){u.mp--;u.status.guard=true;floatAt(u,'ตั้งรับ','buff');log(`AI เลือก ${u.name}: ตั้งรับ`);render();return autoEnd(u)}if(a.type==='prana'){u.mp--;u.status.pranaUsed=true;skills(u).forEach(k=>u.cd[k]=Math.max(0,(u.cd[k]||0)-1));floatAt(u,'-1 CD','buff');log(`AI เลือก ${u.name}: ฝึกปราณ`);render();return autoEnd(u)}}
+function showThink(u){
+  let m=$('thinkModal');if(!m)return;
+  $('thinkHeroName').textContent=u.name+' กำลังคิด...';
+  $('thinkHeroLore').textContent=roster[u.key]?.lore||'';
+  $('thinkSims').textContent=`MCTS ${SMART_BOT_ROLLOUTS} simulations`;
+  m.style.display='block';
+}
+function hideThink(){let m=$('thinkModal');if(m)m.style.display='none';}
+function botTurn(){let u=active(),act=0;function step(){
+  if(gameOver||!u||u.side!=='enemy'||active().id!==u.id){hideThink();return}
+  if(u.relic&&act===0&&relicTargets(u).length>=2){useRelic();botBusy=false;hideThink();return}
+  if(act++>=6||u.mp<=0){botBusy=false;hideThink();return endTurn()}
+  showThink(u);
+  setTimeout(()=>{
+    if(gameOver||active().id!==u.id){hideThink();return}
+    let action=chooseSmartBotAction(u);
+    hideThink();
+    executeSmartBotAction(u,action);
+    if(!gameOver)setTimeout(step,SMART_BOT_DELAY)
+  },SMART_BOT_DELAY)
+}step()}
+function card(k,fn,disabled,extra=''){let r=roster[k],d=document.createElement('div');d.className='card';d.style.opacity=disabled?.45:1;d.onclick=disabled?null:fn;let badge=r.isLeader?'<span class="tag" style="border-color:#ffd34a;color:#ffe47a">LEADER</span>':'';d.innerHTML=`<b>${r.name}</b> ${badge}<div class=sub>${r.lore}<br>HP ${r.maxHp} • ATK ${r.baseAtk} • AGI ${r.agi}</div><div class=sub style="color:#ffe47a">${r.passive.name}</div>${extra}`;return d}
+function pickScore(k){let r=roster[k];return r.maxHp*.035+r.baseAtk*3+r.agi*.18+(r.isLeader?12:0)+Math.random()*20}
+function botChoose(pool){return pool.map(k=>({k,score:pickScore(k)})).sort((a,b)=>b.score-a.score)[0].k}
+function draftTitle(t){document.querySelector('#pickMe h2').textContent=t}
+function renderDraftGrid(pool,onPick,disabledFn=()=>false){meGrid.innerHTML='';pool.forEach(k=>meGrid.appendChild(card(k,()=>onPick(k),disabledFn(k),roster[k].leaderAura?`<div class=sub>ออร่า: ${roster[k].leaderAura}</div>`:'')))}
+function renderPick(){leftLeader=null;rightLeader=null;leftTeam=[];rightTeam=[];banned=[];leaderBans=[];heroBans=[];draftSideFirst=Math.random()<.5?'A':'B';draftPhase=draftSideFirst==='A'?'leaderBanA':'leaderBanB';pickBot.style.display='none';pickMe.style.display='flex';if(draftPhase==='leaderBanB'){let b=botChoose(leaderKeys);leaderBans.push(b);banned.push(b);draftPhase='leaderBanA_afterB'}renderLeaderBanA()}
+function renderLeaderBanA(){draftTitle(`สุ่มได้ฝั่ง ${draftSideFirst} แบนหัวหน้าก่อน • ผู้เล่นแบนหัวหน้า 1 ตัว`);renderDraftGrid(leaderKeys,k=>{leaderBans.push(k);banned.push(k);if(draftSideFirst==='A'){let pool=leaderKeys.filter(x=>!banned.includes(x));let bb=botChoose(pool);leaderBans.push(bb);banned.push(bb);log(`BOT แบนหัวหน้า ${roster[bb].name}`)}draftPhase='leaderPickA';renderLeaderPickA()},k=>banned.includes(k))}
+function renderLeaderPickA(){draftTitle(`เลือกหัวหน้าฝั่งผู้เล่น • แบนหัวหน้าแล้ว: ${leaderBans.map(x=>roster[x].name).join(' / ')}`);renderDraftGrid(leaderKeys,k=>{leftLeader=k;let pool=leaderKeys.filter(x=>!banned.includes(x)&&x!==leftLeader);rightLeader=botChoose(pool);log(`BOT เลือกหัวหน้า ${roster[rightLeader].name}`);draftPhase='heroBanA';renderHeroBanA()},k=>banned.includes(k)||k===rightLeader)}
+function renderHeroBanA(){draftTitle(`ผู้เล่นแบน Hero 1 ตัว • Leader: ${roster[leftLeader].name} vs ${roster[rightLeader].name}`);renderDraftGrid(heroKeys,k=>{heroBans.push(k);banned.push(k);let pool=heroKeys.filter(x=>!banned.includes(x));let bb=botChoose(pool);heroBans.push(bb);banned.push(bb);log(`BOT แบน Hero ${roster[bb].name}`);draftPhase='heroPickA';renderHeroPickA()},k=>banned.includes(k))}
+function renderHeroPickA(){if(leftTeam.length>=3&&rightTeam.length>=3)return startGame();if(rightTeam.length<leftTeam.length){let pool=heroKeys.filter(k=>!banned.includes(k)&&!leftTeam.includes(k)&&!rightTeam.includes(k));if(pool.length)rightTeam.push(botChoose(pool))}if(leftTeam.length>=3&&rightTeam.length>=3)return startGame();draftTitle(`เลือก Hero สลับ A/B • ผู้เล่น ${leftTeam.length}/3 • BOT ${rightTeam.length}/3 • แบน Hero: ${heroBans.map(x=>roster[x].name).join(' / ')}`);renderDraftGrid(heroKeys,k=>{leftTeam.push(k);renderHeroPickA()},k=>banned.includes(k)||leftTeam.includes(k)||rightTeam.includes(k))}
+function applyLeaderAuras(){
+  let allyL=units.find(u=>u.side==='ally'&&u.isLeader),enemyL=units.find(u=>u.side==='enemy'&&u.isLeader);
+  for(let u of units){
+    let L=u.side==='ally'?allyL:enemyL;
+    if(!L)continue;
+    // chiufong: team ATK +8% and HP +10%
+    if(L.key==='chiufong'){u.atk=Math.round(u.atk*1.08);let add=Math.round(u.maxHp*.10);u.maxHp+=add;u.hp+=add}
+    // zhang: team DR -10% and Counter +15%
+    if(L.key==='zhang'){u.status.damageReduction=Math.max(u.status.damageReduction||0,.10);u.status.counterBuff=Math.max(u.status.counterBuff||0,.15)}
+    // guojing: team AGI +5 and Range +1
+    if(L.key==='guojing'){u.agi+=5;u.leaderRangeBonus=1}
+    // zhangwuji: team hpRegen flag (handled in startTurn)
+    // yideng: team range +1
+    if(L.key==='yideng'){u.leaderRangeBonus=1}
+  }
+}
+function initCD(k){let cd={};for(let n in roster[k].skill)cd[n]=(n==='ult'?(roster[k].skill[n].cooldown||0):0);return cd}
+function makeUnit(side,k,i,q,r,leader=false){let rr=roster[k];return{id:(side==='ally'?'L':'R')+i,side,key:k,name:rr.name+(side==='enemy'?' BOT':''),q,r,face:side==='ally'?'SE':'W',hp:rr.maxHp,maxHp:rr.maxHp,atk:rr.baseAtk,dodge:rr.dodge,agi:rr.agi,mp:MOVE_POINTS,cd:initCD(k),status:mkStatus(),turns:0,isLeader:leader}}
+function startGame(){applyAIConfig(true);pickMe.style.display='none';pickBot.style.display='none';
+  // Hex Radius-5: start positions at edges of the hexagonal arena
+  let L=[[0,4],[0,5],[0,6],[0,7]],R=[[10,4],[10,5],[10,6],[10,7]];
+  units=[];units.push(makeUnit('ally',leftLeader,0,L[0][0],L[0][1],true));leftTeam.forEach((k,i)=>units.push(makeUnit('ally',k,i+1,L[i+1][0],L[i+1][1],false)));units.push(makeUnit('enemy',rightLeader,0,R[0][0],R[0][1],true));rightTeam.forEach((k,i)=>units.push(makeUnit('enemy',k,i+1,R[i+1][0],R[i+1][1],false)));applyLeaderAuras();logEl.innerHTML='';gameOver=false;botBusy=false;turnNo=1;groundRelic=null;activeRelicBuffs=[];
+  // Reset Battle Royale fire ring
+  fireCells=new Set();fireWarnCells=new Set();fireLevel=0;
+  updateFireWarn(); // show warn ring for dist=5 from start
+  log(`ระบบ Relic: จบ Round 2/4/6... สุ่ม Relic กลางแผนที่ • Capture 2 แต้ม • Active Radius 1`);log(`ระบบหัวหน้า: ${roster[leftLeader].name} vs ${roster[rightLeader].name} • หัวหน้าตาย = แพ้ทันที`);log(`🔥 Battle Royale: Round 3→วงไฟ 1 • Round 6→วงไฟ 2 • Round 9→วงไฟ 3 • ดาเมจ 12% HP/เทิร์น`);buildOrder();startTurn(order[0])}function resetPick(){resultOverlay.style.display='none';pickMe.style.display='flex';renderPick()}let currentHeroModalUid=null,currentHeroTab='passive';
+function heroUnit(){return units.find(x=>x.id===currentHeroModalUid)}
+function skillSummaryText(s){let a=[];a.push(s.type==='buff'?'บัฟตัวเอง':s.type==='aoe'?'โจมตีวงกว้าง':s.type==='fan'?'โจมตีด้านหน้าแบบพัด':s.type==='dashLine'?'พุ่งเป็นเส้นตรง':s.type==='hit'?'โจมตีเป้าหมายด้านหน้า':'สกิลพิเศษ');if(s.factor)a.push(`${Math.round(s.factor*100)}% ATK`);if(s.hits)a.push(`${s.hits} hits`);if(s.radius)a.push(`รัศมี ${s.radius}`);if(s.burn)a.push(`Burn ${s.burn}`);if(s.slow)a.push(`Slow ${s.slow}`);if(s.mpReduce)a.push(`ลด MP ${s.mpReduce}`);if(s.stun)a.push(s.hardStun?'Hard Stun: ข้ามเทิร์นถัดไป':`Stun ${s.stun}`);if(s.knock)a.push(`ผลัก ${s.knock}`);if(s.toss)a.push(`โยน ${s.toss}`);if(s.shield)a.push(`Shield ${Math.round(s.shield*100)}% HP`);if(s.chain)a.push('Chain');if(s.pierce)a.push('ทะลุเป้า');return a.join(' • ')}
+function skillTabName(k){return k==='attack'?'Basic':k==='skill1'?'Skill 1':k==='skill2'?'Skill 2':k==='skill3'?'Skill 3':k==='ult'?'ULT':k}
+function skillTabIcon(k){return k==='attack'?'⚔️':k==='skill1'?'①':k==='skill2'?'②':k==='skill3'?'③':k==='ult'?'★':'•'}
+function heroTabsHtml(){let u=heroUnit();let tabs=[`<button class="tabBtn ${currentHeroTab==='passive'?'active':''}" onclick="setHeroTab('passive')">Passive</button>`];if(u){tabs=tabs.concat(skills(u).map(k=>`<button class="tabBtn ${currentHeroTab===k?'active':''}" onclick="setHeroTab('${k}')">${skillTabIcon(k)} ${skillTabName(k)}</button>`))}return `<div class="heroTabs skillTabsSplit">${tabs.join('')}</div>`}
+function setHeroTab(tab){currentHeroTab=tab;renderHeroModalBody()}
+function skillCardHtml(u,k){let s=skill(u,k),st=skillReadyState(u,k),max=skillMaxCd(u,k),cd=cdLeft(u,k),w=max?Math.round((max-cd)/max*100):100;return `<div class="tabPane"><div class="skillCardV2 ${k==='ult'?'passiveGlow':''}"><h3>${k==='ult'?'ULT ':''}${s.uiName}</h3><div class="skillMeta"><span class=tag>${skillTabName(k)}</span><span class=tag>MP ${costOf(k,s)}</span><span class=tag>CD ${cd}/${max}</span><span class=tag>Range ${effRange(u,s)}</span><span class=tag>${s.type||'hit'}</span></div><div class="cdPanel"><div class="cdBox"><b>Status</b><span class="${st.code==='ready'?'cdReady':st.code==='cooling'?'cdWait':'cdBad'}">${st.detail}</span><div class="coolBar"><i style="--w:${w}%"></i></div></div><div class="cdBox"><b>Cooldown</b>Max ${max} Turns<br>Current ${cd} Turns</div><div class="cdBox"><b>AI Priority</b><span class="aiBadge">${aiPriority(k,s)}</span></div></div><p>${skillSummaryText(s)}</p><div class="damageFormula"><h4>Damage Formula</h4><div>${s.factor?`${Math.round(s.factor*100)}% ATK`:s.type==='buff'?'Buff / Utility':'Special Effect'}</div><div>Expected Damage: <b>${expectedDamage(u,k)}</b></div></div><div class="modalActionRow"><button class=tinybtn onclick="openDetail('${u.key}','${k}')">รายละเอียดเต็ม</button></div></div></div>`}
+function renderHeroModalBody(){let u=heroUnit();if(!u)return;let r=roster[u.key];modalName.textContent=u.name;let header=`<div class="heroSummary"><p><b>${r.lore}</b></p><p>HP ${u.hp}/${u.maxHp} • MP ${u.mp}/3 • ATK ${u.atk} • AGI ${u.agi} • หัน ${DIR_TEXT[u.face]}</p></div>${heroTabsHtml()}`;if(currentHeroTab==='passive'){modalBody.innerHTML=header+`<div class="tabPane"><div class="skillCardV2 passiveGlow"><h3>Passive: ${r.passive.name}</h3><p>${r.passive.desc}</p><div class="modalActionRow"><button class="tinybtn" onclick="openPassiveDetail('${u.key}')">รายละเอียดเต็ม</button></div></div></div>`;return}if(!skill(u,currentHeroTab)){currentHeroTab='attack'}modalBody.innerHTML=header+skillCardHtml(u,currentHeroTab)}
+function openHeroModal(uid){currentHeroModalUid=uid;currentHeroTab='passive';renderHeroModalBody();heroModal.style.display='flex'}
+function closeHeroModal(){heroModal.style.display='none';closeDetailModal()}
+function openPassiveDetail(key){let r=roster[key];detailName.textContent='Passive: '+r.passive.name;detailBody.innerHTML=`<div class="detailModalCard"><button class="tinybtn close" onclick="closeDetailModal()">ปิด</button><h2>Passive: ${r.passive.name}</h2><p><b>ตัวละคร:</b> ${r.name}</p><div class="detailGrid"><div class="detailStat"><b>ชนิด</b>Passive / ความสามารถติดตัว</div><div class="detailStat"><b>ค่าใช้จ่าย</b>ไม่ใช้ MP</div><div class="detailStat"><b>คูลดาวน์</b>ไม่มี</div></div><p><b>ผล:</b><br>${r.passive.desc}</p><p class="sub">Passive ทำงานตามเงื่อนไขของตัวละครโดยไม่ต้องกดปุ่มสกิล</p></div>`;detailModal.classList.add('detailOverlayTop');detailModal.style.display='flex'}
+function skillExtraText(s){let rows=[];if(s.factor)rows.push(`ดาเมจ ${Math.round(s.factor*100)}% ATK`);if(s.hits)rows.push(`จำนวนฮิต ${s.hits}`);if(s.radius)rows.push(`รัศมี ${s.radius} ช่อง`);if(s.burn)rows.push(`ติด Burn ${s.burn} เทิร์น`);if(s.poison)rows.push(`ติด Poison ${s.poison} เทิร์น`);if(s.slow)rows.push(`Slow ${s.slow} เทิร์น`);if(s.mpReduce)rows.push(`ลด MP ศัตรู ${s.mpReduce}`);if(s.stun)rows.push(s.hardStun?'Hard Stun 1 เทิร์น: เป้าหมายที่โดนจะไม่ได้เล่นในเทิร์นถัดไป และระบบจะข้ามเทิร์นให้อัตโนมัติ':`Stun ${s.stun} เทิร์น`);if(s.knock)rows.push(`ผลัก ${s.knock} ช่อง`);if(s.toss)rows.push(`โยนสุ่มในรัศมี ${s.toss}`);if(s.shield)rows.push(`สร้าง Shield ${Math.round(s.shield*100)}% HP`);if(s.chain)rows.push('โดนตัวแรกแล้วเด้งลูกโซ่ไปศัตรูติดกัน 1 ช่อง');if(s.pierce)rows.push('ยิงทะลุเป้าหมายในแนวหน้า');if(s.retreat||s.retreatAfter)rows.push(`ถอยหลัง ${s.retreat||s.retreatAfter} ช่อง`);if(s.follow)rows.push(`พุ่งตาม ${s.follow} ช่อง`);if(s.lock)rows.push('ล็อกเป้าหมาย หลบไม่ได้');if(!rows.length)rows.push('ไม่มีเอฟเฟกต์พิเศษเพิ่มเติม');return rows.join('<br>')}
+function openDetail(key,k){let r=roster[key],s=r.skill[k],u=heroUnit()&&heroUnit().key===key?heroUnit():active();let cd=u&&u.key===key?cdLeft(u,k):0,max=s.cooldown||0,w=max?Math.round((max-cd)/max*100):100,st=u&&u.key===key?skillReadyState(u,k):{code:'ready',detail:'พร้อมใช้'};detailName.textContent=(k==='ult'?'ULT ':'')+s.uiName;detailBody.innerHTML=`<div class="detailModalCard"><button class="tinybtn close" onclick="closeDetailModal()">ปิด</button><h2>${k==='ult'?'ULT ':''}${s.uiName}</h2><p><b>ตัวละคร:</b> ${r.name}</p><div class="detailGrid"><div class="detailStat"><b>ประเภท</b>${s.type||'hit'}</div><div class="detailStat"><b>MP Cost</b>${costOf(k,s)}</div><div class="detailStat"><b>Cooldown</b>${cd}/${max}</div><div class="detailStat"><b>Range</b>${u&&u.key===key?effRange(u,s):rangeOf(s)}</div></div><div class="cdPanel"><div class="cdBox"><b>Current CD</b><span class="${st.code==='ready'?'cdReady':st.code==='cooling'?'cdWait':'cdBad'}">${st.detail}</span><div class="coolBar"><i style="--w:${w}%"></i></div></div><div class="cdBox"><b>Damage Formula</b>${s.factor?`${Math.round(s.factor*100)}% ATK<br>Expected ${u&&u.key===key?expectedDamage(u,k):'—'}`:'Utility / Special'}</div><div class="cdBox"><b>AI Priority</b><span class="aiBadge">${aiPriority(k,s)}</span></div></div><p><b>สรุป:</b><br>${skillSummaryText(s)}</p><p><b>รายละเอียดระบบ:</b><br>${skillExtraText(s)}</p><p class="sub">ระบบโจมตีส่วนใหญ่ตรวจเป้าหมายตามทิศที่ตัวละครหันหน้าอยู่</p></div>`;detailModal.classList.add('detailOverlayTop');detailModal.style.display='flex'}
+function closeDetailModal(){detailModal.style.display='none';detailModal.classList.remove('detailOverlayTop')}
+
+/* ===== Hex Arena v4.3 AI Override: Danger Map + Retreat Mode + Better Team Shape =====
+   จุดประสงค์: ให้ bot ไม่บวกจนตาย โดยเฉพาะ fighter อย่าง Shang-Chi
+   เพิ่มการประเมินว่า ถ้ายืนจุดนี้จะโดนศัตรูรุม/ยิงได้กี่ตัว และให้ถอยเมื่อเลือดต่ำ
+*/
+function aiCanThreaten(attacker,target){
+  if(!attacker||!target||attacker.hp<=0||target.hp<=0)return false;
+  // ดูแบบหลวม ๆ: อยู่ในระยะสกิลสูงสุด + 1 เพราะเทิร์นถัดไปอาจเดิน/หันหน้าได้
+  return dist(attacker,target)<=Math.max(2,simMaxRangeByUnit(attacker)+1);
+}
+function aiDangerAt(state,unit,q=unit.q,r=unit.r){
+  if(!unit||unit.hp<=0)return 0;
+  let ghost=Object.assign({},unit,{q,r});
+  let enemies=state.filter(e=>e.side!==unit.side&&e.hp>0);
+  let danger=0;
+  // fire cell penalty — treat fire as severe danger so BOT avoids/escapes it
+  if(fireCells.has(id(q,r))) danger+=1800;
+  // warn ring = moderate penalty (next ring incoming)
+  if(fireWarnCells.has(id(q,r))) danger+=600;
+  for(let e of enemies){
+    let d=dist(e,ghost), range=simMaxRangeByUnit(e);
+    let power=simThreatPower(e);
+    if(d<=range) danger+=power*1.15;
+    else if(d<=range+1) danger+=power*.65;
+    else if(d<=range+2) danger+=power*.25;
+    if(simIsCarry(unit)&&d<=2&&simMaxRangeByUnit(e)<=2) danger+=260; // carry โดน melee lock
+  }
+  // โดน 2 ตัวโฟกัส = โทษหนักมาก
+  let focusers=enemies.filter(e=>aiCanThreaten(e,ghost)).length;
+  if(focusers>=2) danger+=900;
+  if(focusers>=3) danger+=900;
+  if(unit.hp/unit.maxHp<.35) danger*=1.35;
+  return danger;
+}
+function aiSafetyAt(state,unit,q=unit.q,r=unit.r){return -aiDangerAt(state,unit,q,r)}
+function aiRetreatDirScore(state,u,dir){
+  let n=neighbor(u.q,u.r,dir);
+  if(!simInside(n.q,n.r)||simUnitAt(state,n.q,n.r,u.id))return -99999;
+  let before=aiDangerAt(state,u,u.q,u.r);
+  let after=aiDangerAt(state,u,n.q,n.r);
+  let enemies=simEnemiesOf(state,u);
+  let nearestBefore=enemies.length?Math.min(...enemies.map(e=>dist(u,e))):0;
+  let nearestAfter=enemies.length?Math.min(...enemies.map(e=>dist(n,e))):0;
+  let score=(before-after)*1.2 + (nearestAfter-nearestBefore)*180;
+  // ถอยเข้าหาเพื่อน/tank ได้คะแนนเพิ่ม
+  let friends=state.filter(x=>x.side===u.side&&x.hp>0&&x.id!==u.id);
+  if(friends.length){
+    let fb=Math.min(...friends.map(f=>dist(u,f))), fa=Math.min(...friends.map(f=>dist(n,f)));
+    if(fa<fb)score+=260;
+    if(fa<=2)score+=180;
+  }
+  return score;
+}
+function aiRoleMode(state,u){
+  let hp=u.hp/u.maxHp;
+  if(fireCells.has(id(u.q,u.r))) return 'RETREAT';
+  let enemies=simEnemiesOf(state,u);
+  // kill shot → ห้าม RETREAT เสมอ
+  let hasKill=enemies.some(e=>Object.keys(roster[u.key].skill).some(k=>{
+    let s=roster[u.key].skill[k];
+    if((u.cd[k]||0)>0||u.mp<(s.mp||(k==='ult'?3:1)))return false;
+    return e.hp<=simDamage(u,e,s,k)&&simTargets(state,u,k).includes(e);
+  }));
+  if(hasKill) return 'ATTACK';
+  // leader สู้จนเลือดต่ำมาก
+  if(u.isLeader&&hp>.25) return 'ATTACK';
+  let danger=aiDangerAt(state,u);
+  if(hp<.18||(hp<.28&&danger>1600))return 'RETREAT';
+  if(hp<.42&&danger>2000)return 'SKIRMISH';
+  return 'ATTACK';
+}
+
+// BFS pathfinding: หาทุก cell ที่ถึงได้ใน mp steps พร้อม direction แรก
+function simReachable(state,u){
+  let visited=new Map(),queue=[{q:u.q,r:u.r,steps:0,dir:null}];
+  visited.set(id(u.q,u.r),{steps:0,dir:null});
+  while(queue.length){
+    let {q,r,steps,dir}=queue.shift();
+    if(steps>=u.mp)continue;
+    for(let d of DIR_ORDER){
+      let n=neighbor(q,r,d);
+      if(!simInside(n.q,n.r)||simUnitAt(state,n.q,n.r,u.id))continue;
+      let nid=id(n.q,n.r);
+      if(!visited.has(nid)){visited.set(nid,{steps:steps+1,dir:dir||d});queue.push({q:n.q,r:n.r,steps:steps+1,dir:dir||d})}
+    }
+  }
+  return visited;
+}
+
+// ประเมินคุณค่าตำแหน่ง: kill shot + skill + danger + kite
+function simPosValue(state,u,q,r){
+  let ghost=Object.assign({},u,{q,r});
+  let enemies=simEnemiesOf(state,u),score=0;
+  let danger=aiDangerAt(state,u,q,r);
+  score-=danger*.6;
+  if(fireCells.has(id(q,r)))return -99999;
+  for(let k in roster[u.key].skill){
+    let s=roster[u.key].skill[k];
+    if((u.cd[k]||0)>0||u.mp<(s.mp||(k==='ult'?3:1)))continue;
+    let oldQ=u.q,oldR=u.r,oldFace=u.face;
+    u.q=q;u.r=r;
+    // หันหน้าหาศัตรูที่อ่อนแอสุด
+    let weakest=enemies.slice().sort((a,b)=>a.hp-b.hp)[0];
+    if(weakest)u.face=faceTo(u,weakest);
+    let ts=simTargets(state,u,k);
+    u.q=oldQ;u.r=oldR;u.face=oldFace;
+    for(let t of ts){
+      let dmg=simDamage(u,t,s,k);
+      score+=dmg*8;
+      if(t.hp<=dmg)score+=3500; // kill shot = ดีมาก
+      if(simIsCarry(t))score+=400;
+      if(t.hp/t.maxHp<.35)score+=600;
+      if(k==='ult')score+=300;
+    }
+  }
+  // kite: carry รักษาระยะ ไม่ติด melee
+  if(simIsCarry(u)){
+    let myRange=simMaxRangeByUnit(u);
+    for(let e of enemies){
+      let d=dist({q,r},e);
+      if(d>=2&&d<=myRange)score+=380; // อยู่ในระยะดี
+      if(d<=1)score-=800; // ติดมือเปล่า = แย่มาก
+    }
+  }
+  // fighter: เข้าใกล้ศัตรูที่อ่อนแอสุด
+  if(!simIsCarry(u)&&enemies.length){
+    let weakest=enemies.slice().sort((a,b)=>a.hp-b.hp)[0];
+    let d=dist({q,r},weakest);
+    score+=Math.max(0,(5-d))*200;
+  }
+  return score;
+}
+function miniPolicyScore(state,u,a){
+  let sc=(a.base||0);
+  let mode=aiRoleMode(state,u);
+  let enemies=simEnemiesOf(state,u),allies=state.filter(x=>x.side===u.side&&x.hp>0&&x.id!==u.id);
+  let weakEnemy=enemies.slice().sort((x,y)=>x.hp-y.hp)[0];
+  let allyCarry=state.filter(x=>x.side===u.side&&x.hp>0&&simIsCarry(x)).sort((x,y)=>x.hp/x.maxHp-y.hp/y.maxHp)[0];
+
+  // ---- RETREAT MODE ----
+  if(mode==='RETREAT'){
+    if(a.type==='defend')sc+=1200;
+    if(a.type==='prana')sc+=260;
+    if(a.type==='move')sc+=Math.max(-900,aiRetreatDirScore(state,u,a.dir));
+    if(a.type==='skill'){
+      let s=roster[u.key].skill[a.k],ts=simTargets(state,u,a.k);
+      let canKill=ts.some(t=>t.hp<=simDamage(u,t,s,a.k));
+      if(canKill)sc+=2200; else sc-=900; // kill ดีกว่า RETREAT เสมอ
+      if(s.selfRetreat||s.retreatAfter||s.retreat)sc+=700;
+      if(s.knock||s.toss||s.slow)sc+=320;
+    }
+  }
+
+  // ---- SKILL SCORING: fight-first + burst + kill ----
+  if(a.type==='skill'){
+    let s=roster[u.key].skill[a.k],ts=simTargets(state,u,a.k);
+    if(a.k==='ult')sc+=350; // ult ดีกว่าเสมอ
+    if(ts.length>1)sc+=280*ts.length; // AoE ดีมาก
+    let totalDmg=0;
+    for(let t of ts){
+      let dmg=s.type==='mark'||s.type==='swap'?Math.round(u.atk*.2):simDamage(u,t,s,a.k);
+      totalDmg+=dmg;
+      if(t.hp<=dmg){sc+=4200;if(t.isLeader)sc+=3000} // KILL สำคัญสูงสุด
+      if(t===weakEnemy)sc+=600; // โฟกัส weak
+      if(t.hp/t.maxHp<.35)sc+=1200; // กำจัดตัวที่เลือดต่ำก่อน
+      if(simIsCarry(t))sc+=800;
+      if(s.knock||s.toss){sc+=280;let fd=simNearestFriend(state,t);if(fd<=2&&simIsCarry(t))sc+=900}
+      if(s.mpReduce)sc+=160*s.mpReduce;
+      if(s.slow)sc+=180;
+      if(s.burn)sc+=100;
+    }
+    sc+=totalDmg*6; // macro damage
+    // burst combo: ถ้า skill นี้ + attack ตามจบเป้าได้ บวกเพิ่ม
+    if(weakEnemy&&ts.includes(weakEnemy)){
+      let atkDmg=Math.round(u.atk*.85);
+      if(weakEnemy.hp>ts.map(t=>simDamage(u,t,s,a.k)).find((_,i)=>ts[i]===weakEnemy)&&
+         weakEnemy.hp<=(simDamage(u,weakEnemy,s,a.k)+atkDmg))sc+=1800;
+    }
+    // ATTACK mode: ไม่ควรเล่น skill ที่ไม่มี target ดี
+    if(mode==='ATTACK'&&ts.length===0)sc-=2000;
+  }
+
+  // ---- MOVE SCORING: pathfinding ไปหา best position ----
+  if(a.type==='move'){
+    let n=neighbor(u.q,u.r,a.dir);
+    // ค่าตำแหน่งปลายทาง: skill opportunity + danger + kite
+    let posVal=simPosValue(state,u,n.q,n.r);
+    sc+=posVal*.4;
+    // pathfinding: reachable BFS — ถ้าตำแหน่งนี้ไม่ใช่ทิศทางที่ดีที่สุดให้ลด
+    let reach=simReachable(state,u);
+    let bestPos=null,bestV=-99999;
+    for(let [cid,info] of reach){
+      if(cid===id(u.q,u.r))continue;
+      let[cq,cr]=cid.split(',').map(Number);
+      let v=simPosValue(state,u,cq,cr);
+      if(v>bestV){bestV=v;bestPos={q:cq,r:cr,dir:info.dir}}
+    }
+    if(bestPos&&bestPos.dir===a.dir)sc+=1200; // เดินถูกทิศทางตาม pathfinding
+    else if(bestPos&&bestPos.dir!==a.dir)sc-=300;
+
+    // carry: kite จริงจัง
+    if(simIsCarry(u)){
+      let myRange=simMaxRangeByUnit(u);
+      let meleeThreat=enemies.filter(e=>simMaxRangeByUnit(e)<=2&&dist(e,n)<=2).length;
+      if(meleeThreat<enemies.filter(e=>simMaxRangeByUnit(e)<=2&&dist(e,u)<=2).length)sc+=1200;
+      if(meleeThreat>0)sc-=1400;
+      if(weakEnemy){let d=dist(n,weakEnemy);if(d>=2&&d<=myRange)sc+=500}
+    }
+    // anti-clump: ห้ามเดินติด ally มากเกิน
+    let allyTooClose=allies.filter(a=>dist(n,a)<=1).length;
+    if(allyTooClose>=1)sc-=800*allyTooClose;
+    // tank: เดินบัง carry แต่ไม่ซ้อน
+    if(simIsTank(u)&&allyCarry){let ba=dist(u,allyCarry),af=dist(n,allyCarry);if(af>=2&&af<ba)sc+=500}
+    // fighter: เดินเข้าหา weak target
+    if(!simIsCarry(u)&&weakEnemy){let ba=dist(u,weakEnemy),af=dist(n,weakEnemy);if(af<ba)sc+=400;if(af<=1)sc+=700}
+    // อย่าเดินเข้ากล้อง 2 ตัว
+    if(!simIsCarry(u)){let focus=enemies.filter(e=>aiCanThreaten(e,Object.assign({},u,{q:n.q,r:n.r}))).length;if(focus>=2&&u.hp/u.maxHp<.60)sc-=1000}
+  }
+
+  // ---- FACE SCORING ----
+  if(a.type==='face'){
+    let old=u.face;u.face=a.dir;
+    let bestTS=0;
+    for(let k in roster[u.key].skill){
+      if(!simCanUse(state,u,k))continue;
+      for(let t of simTargets(state,u,k)){
+        let dmg=simDamage(u,t,roster[u.key].skill[k],k);
+        bestTS=Math.max(bestTS,dmg*6+(t.hp<=dmg?4200:0)+(simIsCarry(t)?800:0)+(t.hp/t.maxHp<.35?1200:0));
+      }
+    }
+    u.face=old;
+    sc+=bestTS;
+    if(mode==='RETREAT')sc-=200;
+    if(bestTS===0)sc-=1000; // หันแล้วไม่ได้อะไร = เสียเวลา
+  }
+
+  // ---- DEFEND SCORING ----
+  if(a.type==='defend'){
+    if(fireCells.has(id(u.q,u.r)))sc-=2000;
+    let d=aiDangerAt(state,u);
+    // fight-first: defend ต่อเมื่อเลือดต่ำจริงๆ หรือ danger สูงมาก
+    if(u.hp/u.maxHp<.25)sc+=1200;
+    else if(u.hp/u.maxHp<.40)sc+=600;
+    else sc-=600; // อย่า defend ถ้าเลือดเยอะ
+    if(d>1400)sc+=700;
+    if(simIsCarry(u)&&enemies.filter(e=>dist(e,u)<=2).length>=1)sc+=700;
+  }
+
+  // ---- PRANA ----
+  if(a.type==='prana'){
+    let bigCDs=Object.values(u.cd||{}).filter(v=>v>2).length;
+    sc+=bigCDs*180;
+    if(mode==='RETREAT')sc+=100;
+    if(mode==='ATTACK')sc-=200; // fight-first: อย่า prana ถ้ากำลังไฟต์
+  }
+  return Math.max(1,sc+20);
+}
+// ค่า win-point ฝั่งเดียว: HP, kills, threats, positioning
+function sideWinPoints(state,side){
+  let allies=state.filter(x=>x.side===side&&x.hp>0);
+  let enemies=state.filter(x=>x.side!==side&&x.hp>0);
+  if(!enemies.length)return 8000;
+  if(!allies.length)return -8000;
+  let pts=0;
+  // HP advantage
+  let allyHP=allies.reduce((s,u)=>s+u.hp/u.maxHp,0)/allies.length;
+  let enemyHP=enemies.reduce((s,u)=>s+u.hp/u.maxHp,0)/enemies.length;
+  pts+=(allyHP-enemyHP)*2800;
+  // headcount
+  pts+=(allies.length-enemies.length)*1800;
+  // kill threats on enemies
+  for(let e of enemies){
+    if(e.hp<=simPotentialDamage(allies,e)){pts+=2000;if(e.isLeader)pts+=3000}
+    if(e.hp/e.maxHp<.35)pts+=800;
+    let focusers=allies.filter(a=>aiCanThreaten(a,e)).length;
+    if(focusers>=2)pts+=1000+(simIsCarry(e)?600:0);
+    if(simNearestFriend(state,e)>=3)pts+=600+(simIsCarry(e)?700:0);
+  }
+  // protect own units
+  for(let a of allies){
+    if(a.hp<=simPotentialDamage(enemies,a))pts-=1800;
+    if(a.hp/a.maxHp<.35)pts-=700;
+    let danger=aiDangerAt(state,a);
+    pts-=danger*(simIsCarry(a)?.65:.35);
+    // carry isolation penalty
+    if(simIsCarry(a)&&simNearestFriend(state,a)>=3)pts-=900;
+  }
+  // anti-clump: ห้ามยืนซ้อนกัน แต่ใกล้กันพอควร
+  for(let i=0;i<allies.length;i++)for(let j=i+1;j<allies.length;j++){
+    let d=dist(allies[i],allies[j]);
+    if(d<=1)pts-=1200; // ติดกันเกินไป = โดน AoE
+    else if(d<=3)pts+=150; // ระยะดี
+    else pts-=100*(d-3); // ห่างเกิน
+  }
+  return pts;
+}
+function miniStrategicValue(state,side){
+  let opp=side==='ally'?'enemy':'ally';
+  // win-delta ทั้งสองฝั่ง
+  let myPts=sideWinPoints(state,side);
+  let oppPts=sideWinPoints(state,opp);
+  let delta=myPts-oppPts;
+  return Math.max(-1,Math.min(1,Math.tanh(delta/6000)));
+}
+function miniValueAfterAction(rootState,u,a){
+  let st=JSON.parse(JSON.stringify(rootState));
+  let actor=st.find(x=>x.id===u.id&&x.hp>0);
+  if(!actor)return -1;
+  simApplyAction(st,actor.id,a);
+  let w=simWinnerSide(st);
+  if(w)return w===u.side?1:-1;
+  let opp=u.side==='enemy'?'ally':'enemy';
+  let myPts=sideWinPoints(st,u.side);
+  let oppPts=sideWinPoints(st,opp);
+  let delta=Math.tanh((myPts-oppPts)/6000);
+  // depth=1 response เท่านั้น (ไม่ใช่ 2) — performance กับหลาย hero
+  let response=Math.tanh(simBestResponseScore(st,opp,1)/5200);
+  let afterActor=st.find(x=>x.id===u.id);
+  let selfDanger=afterActor&&afterActor.hp>0?Math.min(.35,aiDangerAt(st,afterActor)/5000):0;
+  return Math.max(-1,Math.min(1,0.75*delta - 0.15*response - selfDanger));
+}
+function chooseSmartBotAction(u){
+  let rootState=simCloneUnits();
+  let actions=simBuildActions(rootState,u,1);
+  if(!actions.length)return null;
+  // จำกัด action pool ตามจำนวน hero ที่ active (ยิ่งมากยิ่งต้องเร็ว)
+  let liveCount=units.filter(x=>x.hp>0).length;
+  let actionCap=liveCount>=6?10:liveCount>=4?12:16;
+  actions=actions.sort((a,b)=>miniPolicyScore(rootState,u,b)-miniPolicyScore(rootState,u,a)).slice(0,Math.min(actionCap,actions.length));
+  let sumPrior=actions.reduce((m,a)=>m+miniPolicyScore(rootState,u,a),0)||1;
+  for(let a of actions){a.prior=miniPolicyScore(rootState,u,a)/sumPrior;a.visits=0;a.total=0;a.q=0}
+  let loops=Math.max(20,SMART_BOT_ROLLOUTS),cPuct=1.75;
+  for(let i=0;i<loops;i++){
+    let totalN=actions.reduce((m,a)=>m+a.visits,0);
+    let selected=null,bestU=-999999;
+    for(let a of actions){let ucb=a.q + cPuct*a.prior*Math.sqrt(totalN+1)/(1+a.visits);if(ucb>bestU){bestU=ucb;selected=a}}
+    let v=miniValueAfterAction(rootState,u,selected);
+    selected.visits++;selected.total+=v;selected.q=selected.total/selected.visits;
+  }
+  let best=actions.sort((a,b)=>b.visits-a.visits || b.q-a.q)[0];
+  if(best){
+    let mode=aiRoleMode(rootState,u);
+    let myPts=sideWinPoints(rootState,u.side),oppPts=sideWinPoints(rootState,u.side==='ally'?'enemy':'ally');
+    let winDelta=Math.round(myPts-oppPts);
+    let winLabel=winDelta>0?`BOT +${winDelta}`:`PLR ${Math.abs(winDelta)>0?'+'+Math.abs(winDelta):'='}`;
+    best.label=best.label+` • ${mode} • Q${Math.round(best.q*100)} V${best.visits} • ${winLabel}`;
+    best.score=best.q.toFixed(3);
+  }
+  return best;
+}
+
+window.__HEX_TEST__={roster,neighbor,dist,DIR_ORDER,DIR_TEXT};renderPick();initAIConfig();
+</script></body></html>
