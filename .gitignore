@@ -1,8 +1,8 @@
 #Ignore all files except for .gitignore and Version1.0.html
-*
-!.gitignore
-!Version1.0.html
-!Hex_Heroes.html
+
+.gitignore
+Version1.0.html
+Hex_Heroes.html
 
 # Ignore list of files and directories
 # Hex_Heroes.html

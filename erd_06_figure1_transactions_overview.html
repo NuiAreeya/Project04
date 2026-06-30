@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="UTF-8">
+<title>Figure 1: Transaction Data Model Overview</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#1a1b26;color:#c0caf5;overflow:hidden;height:100vh}
+#toolbar{
+  position:fixed;top:0;left:0;right:0;height:52px;
+  background:#16161e;border-bottom:1px solid #292e42;
+  display:flex;align-items:center;padding:0 16px;gap:10px;z-index:100;
+}
+#toolbar h1{font-size:15px;color:#bb9af7;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#toolbar .sub{font-size:11px;color:#565f89;max-width:500px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:none}
+.btn{
+  background:#292e42;color:#c0caf5;border:1px solid #3b4261;
+  padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;
+  transition:background .15s;
+}
+.btn:hover{background:#3b4261}
+.hint{font-size:10px;color:#414868;white-space:nowrap}
+#canvas-wrap{position:fixed;top:52px;left:0;right:0;bottom:0;overflow:hidden}
+svg#canvas{width:100%;height:100%;cursor:grab}
+svg#canvas.grabbing{cursor:grabbing}
+.entity{cursor:move;filter:drop-shadow(2px 4px 6px rgba(0,0,0,.5))}
+.entity:hover{filter:drop-shadow(0 0 8px rgba(187,154,247,.4)) drop-shadow(2px 4px 6px rgba(0,0,0,.5))}
+.entity.dragging-now{filter:drop-shadow(0 0 12px rgba(187,154,247,.7))}
+#legend{
+  position:fixed;bottom:12px;left:12px;
+  background:#16161e;border:1px solid #292e42;border-radius:8px;
+  padding:8px 12px;font-size:11px;color:#565f89;
+  display:flex;gap:14px;align-items:center;
+}
+.leg-pk{color:#f7768e;font-weight:bold}
+.leg-map{display:inline-block;width:10px;height:10px;background:#9d7cd8;border-radius:2px;vertical-align:middle}
+#info-box{
+  position:fixed;bottom:12px;right:12px;
+  background:#16161e;border:1px solid #292e42;border-radius:8px;
+  padding:8px 12px;font-size:11px;color:#565f89;
+}
+</style>
+</head>
+<body>
+<div id="toolbar">
+  <h1>Figure 1: Transaction Data Model Overview</h1>
+  <button class="btn" onclick="resetView()" title="Reset position and zoom">⟳ Reset</button>
+  <button class="btn" onclick="zoomBy(1.25)" title="Zoom in">＋</button>
+  <button class="btn" onclick="zoomBy(0.8)" title="Zoom out">－</button>
+  <button class="btn" onclick="fitAll()" title="Fit all tables">Fit</button>
+  <span class="hint">Drag tables • Scroll to zoom • Drag background to pan</span>
+</div>
+<div id="canvas-wrap">
+<svg id="canvas" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#414868"/>
+    </marker>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <g id="root">
+    <g id="conn-layer"></g>
+    <g id="ent-layer"></g>
+  </g>
+</svg>
+</div>
+<div id="legend">
+  <span><span class="leg-pk">PK</span> Primary Key</span>
+  <span><span class="leg-map"></span> MAP table</span>
+  <span>— Relationship lines follow tables</span>
+</div>
+<div id="info-box">Figure 1: Transaction Data Model Overview</div>
+<script>
+const DATA = {"entities": [{"id": "CustInvoiceTrans", "x": 20, "y": 20, "w": 160, "color": "default", "pks": ["RecId"], "fields": ["SalesId", "InvoiceId", "ItemId", "*"]}, {"id": "CustTrans", "x": 220, "y": 20, "w": 155, "color": "default", "pks": ["RecId"], "fields": ["InvoiceAccount", "InvoiceNum", "InvoiceDate", "*"]}, {"id": "AssetTrans", "x": 420, "y": 20, "w": 140, "color": "default", "pks": ["RecId"], "fields": ["AssetId", "TransDate", "*"]}, {"id": "ProjEmplTrans", "x": 610, "y": 20, "w": 145, "color": "default", "pks": ["RecId"], "fields": ["EmplId", "ProjId", "*"]}, {"id": "CustInvoiceJour", "x": 20, "y": 200, "w": 160, "color": "default", "pks": ["RecId"], "fields": ["SalesId", "InvoiceAccount", "*"]}, {"id": "LedgerTrans", "x": 220, "y": 200, "w": 155, "color": "default", "pks": ["RecId"], "fields": ["AccountNum", "Voucher", "TransDate", "*"]}, {"id": "BankAccountTrans", "x": 420, "y": 200, "w": 160, "color": "default", "pks": ["RecId"], "fields": ["Voucher", "TransDate", "AccountId", "*"]}, {"id": "ProjOnAccTrans", "x": 610, "y": 200, "w": 145, "color": "default", "pks": ["RecId"], "fields": ["ProjId", "TransId", "*"]}, {"id": "InventTrans", "x": 20, "y": 380, "w": 160, "color": "default", "pks": ["InventTransId", "InventDimId", "RecId"], "fields": ["ItemId", "TransType", "*"]}, {"id": "VendInvoiceJour", "x": 20, "y": 540, "w": 160, "color": "default", "pks": ["RecId"], "fields": ["PurchId", "InvoiceAccount", "*"]}, {"id": "VendTrans", "x": 220, "y": 380, "w": 155, "color": "default", "pks": ["RecId"], "fields": ["AccountNum", "Voucher", "Invoice", "*"]}, {"id": "TaxTrans", "x": 420, "y": 380, "w": 140, "color": "default", "pks": ["RecId"], "fields": ["Voucher", "TransDate", "TaxCode", "*"]}, {"id": "ProjTransPosting", "x": 580, "y": 330, "w": 165, "color": "default", "pks": ["RecId"], "fields": ["TransId", "ProjTransType", "AmountMST", "*"]}, {"id": "ProjRevenueTrans", "x": 780, "y": 200, "w": 155, "color": "default", "pks": ["TransId"], "fields": ["ProjId", "CategoryId", "*"]}, {"id": "ProjCostTrans", "x": 780, "y": 340, "w": 155, "color": "default", "pks": ["TransId"], "fields": ["ProjId", "CategoryId", "*"]}, {"id": "ProjItemTrans", "x": 780, "y": 460, "w": 155, "color": "default", "pks": ["TransId"], "fields": ["ItemId", "ProjId", "*"]}, {"id": "VendInvoiceTrans", "x": 20, "y": 680, "w": 160, "color": "default", "pks": ["RecId"], "fields": ["PurchId", "ItemId", "*"]}], "connections": [{"from": "CustInvoiceTrans", "to": "LedgerTrans", "label": "Voucher"}, {"from": "CustTrans", "to": "LedgerTrans", "label": "Voucher"}, {"from": "AssetTrans", "to": "LedgerTrans", "label": "Voucher"}, {"from": "CustInvoiceJour", "to": "LedgerTrans", "label": "Voucher"}, {"from": "BankAccountTrans", "to": "LedgerTrans", "label": "Voucher"}, {"from": "VendTrans", "to": "LedgerTrans", "label": "Voucher"}, {"from": "TaxTrans", "to": "LedgerTrans", "label": "Voucher"}, {"from": "InventTrans", "to": "LedgerTrans", "label": "Voucher"}, {"from": "ProjTransPosting", "to": "LedgerTrans", "label": "Voucher"}, {"from": "ProjTransPosting", "to": "ProjRevenueTrans", "label": "TransId"}, {"from": "ProjTransPosting", "to": "ProjCostTrans", "label": "TransId"}, {"from": "ProjTransPosting", "to": "ProjItemTrans", "label": "TransId"}, {"from": "ProjTransPosting", "to": "ProjOnAccTrans", "label": "TransId"}, {"from": "ProjTransPosting", "to": "ProjEmplTrans", "label": "TransId"}, {"from": "CustInvoiceJour", "to": "CustInvoiceTrans", "label": "SalesId"}, {"from": "VendInvoiceJour", "to": "VendInvoiceTrans", "label": "PurchId"}, {"from": "VendInvoiceJour", "to": "VendTrans", "label": "Voucher"}]};
+
+// ── Constants ────────────────────────────────────────────────────
+const HH=24, RH=18;
+const PALETTE={
+  default:{h:"#364A5E",b:"#7aa2f7",txt:"#c0caf5",pk:"#7aa2f7",field:"#a9b1d6"},
+  map:    {h:"#3d2b5e",b:"#9d7cd8",txt:"#c0caf5",pk:"#bb9af7",field:"#a9b1d6"},
+  asset:  {h:"#1f3a1f",b:"#9ece6a",txt:"#c0caf5",pk:"#9ece6a",field:"#a9b1d6"},
+  proj:   {h:"#3a1f1f",b:"#f7768e",txt:"#c0caf5",pk:"#f7768e",field:"#a9b1d6"},
+};
+
+// ── State ────────────────────────────────────────────────────────
+const pos={}, sz={};
+let pan={x:60,y:60}, scale=1;
+let entDrag=null, panDrag=null;
+
+// ── SVG helper ───────────────────────────────────────────────────
+const NS="http://www.w3.org/2000/svg";
+function el(tag,attrs,...kids){
+  const e=document.createElementNS(NS,tag);
+  for(const[k,v]of Object.entries(attrs)) e.setAttribute(k,v);
+  kids.forEach(k=>{ if(k!=null) e.appendChild(typeof k==="string"?document.createTextNode(k):k); });
+  return e;
+}
+
+// ── Entity height/width ───────────────────────────────────────────
+function eH(ent){
+  let h=HH+ent.pks.length*RH;
+  if(ent.pks.length&&ent.fields.length) h+=3;
+  h+=ent.fields.length*RH;
+  return h;
+}
+function eW(ent){ return ent.w||165; }
+
+// ── Render entity ────────────────────────────────────────────────
+function renderEntity(ent){
+  const id=ent.id, x=pos[id].x, y=pos[id].y;
+  const w=eW(ent), h=eH(ent);
+  sz[id]={w,h};
+  const pal=PALETTE[ent.color||"default"];
+
+  const g=el("g",{class:"entity",id:"g_"+id.replace(/\s/g,"_"),transform:`translate(${x},${y})`});
+
+  // shadow rect
+  g.appendChild(el("rect",{x:3,y:3,width:w,height:h,rx:5,fill:"rgba(0,0,0,0.4)"}));
+  // body
+  g.appendChild(el("rect",{x:0,y:0,width:w,height:h,rx:5,fill:"#1a1b26",stroke:pal.b,"stroke-width":1.5}));
+  // header bg
+  g.appendChild(el("rect",{x:0,y:0,width:w,height:HH,rx:5,fill:pal.h}));
+  g.appendChild(el("rect",{x:0,y:HH-5,width:w,height:5,fill:pal.h}));
+  // header text
+  const ht=el("text",{x:w/2,y:16,"text-anchor":"middle",fill:"#ffffff","font-size":11,"font-weight":"bold","font-family":"Arial"});
+  ht.textContent=id;
+  g.appendChild(ht);
+
+  let cy=HH;
+  ent.pks.forEach((pk,i)=>{
+    g.appendChild(el("rect",{x:0,y:cy,width:w,height:RH,fill:i%2===0?"#1e2030":"#1a1b26"}));
+    g.appendChild(el("rect",{x:0,y:cy,width:3,height:RH,fill:"#f7768e"}));
+    const lbl=el("text",{x:7,y:cy+13,fill:"#f7768e","font-size":9,"font-weight":"bold","font-family":"Arial"});
+    lbl.textContent="PK";
+    g.appendChild(lbl);
+    const txt=el("text",{x:28,y:cy+13,fill:pal.pk,"font-size":10,"font-weight":"bold","text-decoration":"underline","font-family":"Arial"});
+    txt.textContent=pk;
+    g.appendChild(txt);
+    cy+=RH;
+  });
+  if(ent.pks.length&&ent.fields.length){
+    g.appendChild(el("line",{x1:0,y1:cy,x2:w,y2:cy,stroke:"#292e42","stroke-width":1}));
+    cy+=3;
+  }
+  ent.fields.forEach(f=>{
+    const ft=el("text",{x:10,y:cy+13,fill:pal.field,"font-size":10,"font-family":"Arial"});
+    ft.textContent=f;
+    g.appendChild(ft);
+    cy+=RH;
+  });
+
+  g.addEventListener("mousedown",ev=>startEntDrag(ev,id));
+  document.getElementById("ent-layer").appendChild(g);
+}
+
+// ── Connection routing ────────────────────────────────────────────
+function anchors(id){
+  const p=pos[id]||{x:0,y:0}, s=sz[id]||{w:165,h:80};
+  return{
+    top:   {x:p.x+s.w/2, y:p.y},
+    bottom:{x:p.x+s.w/2, y:p.y+s.h},
+    left:  {x:p.x,        y:p.y+s.h/2},
+    right: {x:p.x+s.w,    y:p.y+s.h/2},
+    cx:    p.x+s.w/2, cy:p.y+s.h/2
+  };
+}
+
+function bestAnchors(a,b){
+  const pa=anchors(a), pb=anchors(b);
+  const dx=pb.cx-pa.cx, dy=pb.cy-pa.cy;
+  let fs,ts;
+  if(Math.abs(dx)>=Math.abs(dy)){fs=dx>0?"right":"left"; ts=dx>0?"left":"right";}
+  else{fs=dy>0?"bottom":"top"; ts=dy>0?"top":"bottom";}
+  return{x1:pa[fs].x,y1:pa[fs].y,x2:pb[ts].x,y2:pb[ts].y,fs};
+}
+
+function cubicPath(x1,y1,x2,y2,fs){
+  if(fs==="right"||fs==="left"){
+    const mx=(x1+x2)/2;
+    return `M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`;
+  } else {
+    const my=(y1+y2)/2;
+    return `M${x1},${y1} C${x1},${my} ${x2},${my} ${x2},${y2}`;
+  }
+}
+
+function renderConnections(){
+  const layer=document.getElementById("conn-layer");
+  layer.innerHTML="";
+  DATA.connections.forEach(c=>{
+    if(!pos[c.from]||!pos[c.to]) return;
+    const{x1,y1,x2,y2,fs}=bestAnchors(c.from,c.to);
+    const path=el("path",{
+      d:cubicPath(x1,y1,x2,y2,fs),
+      fill:"none",stroke:"#3b4261","stroke-width":"1.8",
+      "marker-end":"url(#arr)"
+    });
+    layer.appendChild(path);
+    if(c.label){
+      const mx=(x1+x2)/2, my=(y1+y2)/2;
+      // bg for label
+      const lbl=el("text",{x:mx,y:my-4,"text-anchor":"middle",fill:"#565f89","font-size":9,"font-family":"Arial"});
+      lbl.textContent=c.label;
+      layer.appendChild(lbl);
+    }
+  });
+}
+
+// ── Entity drag ───────────────────────────────────────────────────
+function screenToSVG(cx,cy){
+  return{x:(cx-pan.x)/scale, y:(cy-pan.y)/scale};
+}
+
+function startEntDrag(ev,id){
+  ev.stopPropagation(); ev.preventDefault();
+  const pt=screenToSVG(ev.clientX,ev.clientY);
+  entDrag={id,ox:pt.x-pos[id].x,oy:pt.y-pos[id].y};
+  const g=document.getElementById("g_"+id.replace(/\s/g,"_"));
+  g.classList.add("dragging-now");
+  document.getElementById("ent-layer").appendChild(g);
+}
+
+document.getElementById("canvas").addEventListener("mousedown",ev=>{
+  if(ev.target.closest(".entity")) return;
+  panDrag={sx:ev.clientX-pan.x,sy:ev.clientY-pan.y};
+  document.getElementById("canvas").classList.add("grabbing");
+});
+
+document.addEventListener("mousemove",ev=>{
+  if(entDrag){
+    const pt=screenToSVG(ev.clientX,ev.clientY);
+    pos[entDrag.id].x=pt.x-entDrag.ox;
+    pos[entDrag.id].y=pt.y-entDrag.oy;
+    document.getElementById("g_"+entDrag.id.replace(/\s/g,"_"))
+      .setAttribute("transform",`translate(${pos[entDrag.id].x},${pos[entDrag.id].y})`);
+    renderConnections();
+  }
+  if(panDrag){
+    pan.x=ev.clientX-panDrag.sx;
+    pan.y=ev.clientY-panDrag.sy;
+    applyTransform();
+  }
+});
+
+document.addEventListener("mouseup",()=>{
+  if(entDrag){
+    const g=document.getElementById("g_"+entDrag.id.replace(/\s/g,"_"));
+    if(g) g.classList.remove("dragging-now");
+    entDrag=null;
+  }
+  if(panDrag){panDrag=null; document.getElementById("canvas").classList.remove("grabbing");}
+});
+
+// ── Zoom ──────────────────────────────────────────────────────────
+document.getElementById("canvas").addEventListener("wheel",ev=>{
+  ev.preventDefault();
+  const factor=ev.deltaY<0?1.1:0.9;
+  const before=screenToSVG(ev.clientX,ev.clientY);
+  scale=Math.max(0.15,Math.min(4,scale*factor));
+  // Keep mouse point fixed
+  pan.x=ev.clientX-before.x*scale;
+  pan.y=ev.clientY-before.y*scale;
+  applyTransform();
+},{passive:false});
+
+function zoomBy(f){scale=Math.max(0.15,Math.min(4,scale*f));applyTransform();}
+
+function applyTransform(){
+  document.getElementById("root").setAttribute("transform",`translate(${pan.x},${pan.y}) scale(${scale})`);
+}
+
+function resetView(){scale=1;pan={x:60,y:60};applyTransform();}
+
+function fitAll(){
+  if(!DATA.entities.length) return;
+  let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+  DATA.entities.forEach(e=>{
+    const p=pos[e.id],s=sz[e.id]||{w:165,h:80};
+    minX=Math.min(minX,p.x); minY=Math.min(minY,p.y);
+    maxX=Math.max(maxX,p.x+s.w); maxY=Math.max(maxY,p.y+s.h);
+  });
+  const wrap=document.getElementById("canvas-wrap");
+  const vw=wrap.clientWidth, vh=wrap.clientHeight;
+  const dw=maxX-minX+80, dh=maxY-minY+80;
+  scale=Math.min(0.95*vw/dw, 0.95*vh/dh, 2);
+  pan={x:(vw-dw*scale)/2-minX*scale+40, y:(vh-dh*scale)/2-minY*scale+40};
+  applyTransform();
+}
+
+// ── Touch support ─────────────────────────────────────────────────
+let lastTouchDist=null;
+document.getElementById("canvas").addEventListener("touchstart",ev=>{
+  if(ev.touches.length===2) lastTouchDist=Math.hypot(ev.touches[0].clientX-ev.touches[1].clientX,ev.touches[0].clientY-ev.touches[1].clientY);
+},{passive:true});
+document.getElementById("canvas").addEventListener("touchmove",ev=>{
+  if(ev.touches.length===2){
+    const d=Math.hypot(ev.touches[0].clientX-ev.touches[1].clientX,ev.touches[0].clientY-ev.touches[1].clientY);
+    if(lastTouchDist) zoomBy(d/lastTouchDist);
+    lastTouchDist=d;
+    ev.preventDefault();
+  }
+},{passive:false});
+
+// ── Init ──────────────────────────────────────────────────────────
+DATA.entities.forEach(e=>{pos[e.id]={x:e.x,y:e.y};});
+DATA.entities.forEach(e=>renderEntity(e));
+setTimeout(()=>{
+  DATA.entities.forEach(e=>{if(!sz[e.id]) sz[e.id]={w:eW(e),h:eH(e)};});
+  renderConnections();
+  applyTransform();
+},0);
+</script>
+</body></html>
